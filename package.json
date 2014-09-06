@@ -1,0 +1,51 @@
+{
+  "version": "0.0.1",
+  "name": "cookie-encryption",
+  "description": "encrypt/decrypt data to store on cookie",
+  "keywords": [
+    "cookie",
+    "encryption",
+    "authentication"
+  ],
+  "preferGlobal": false,
+  "homepage": "http://supergiovane.tk/#/cookie-encryption",
+  "author": {
+    "name": "hex7c0",
+    "email": "hex7c0@gmail.com",
+    "url": "http://hex7c0.tk/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hex7c0/cookie-encryption.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hex7c0/cookie-encryption/issues",
+    "email": "hex7c0@gmail.com"
+  },
+  "directories":{
+    "doc":"./doc"
+  },
+  "main": "index.min.js",
+  "dependencies": {
+    "arc4": "2.2.5",
+    "autokey": "1.3.4"
+  },
+  "devDependencies": {
+    "express": "~4.8.8",
+    "cookie-parser": "~1.3.3",
+    "mocha": "~1.21.4",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-contrib-uglify": "~0.5.1",
+    "grunt-endline": "~0.2.2",
+    "grunt-shell": "~1.1.1",
+    "supertest": "~0.13.0"
+  },
+  "engines": {
+    "node": ">=0.10"
+  },
+  "scripts": {
+    "prepublish": "npm prune",
+    "test": "mocha --bail --check-leaks test/"
+  },
+  "license": "GPLv3"
+}
