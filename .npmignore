@@ -6,7 +6,6 @@
 .travis.yml
 .DS_Store
 
-index.js
 Gruntfile.js
 bower.json
 
@@ -17,4 +16,4 @@ test/
 
 node_modules/
 bower_components/
-tmp/
+

@@ -26,11 +26,11 @@ module.exports = function(grunt) {
             target: {
                 files: [ {
                     expand: true,
-                    src: 'lib/*.js',
+                    src: 'lib/**/*.js',
                     dest: 'min'
                 }, {
                     expand: true,
-                    src: 'module/*.js',
+                    src: 'module/**/*.js',
                     dest: 'min'
                 }, {
                     'index.min.js': 'index.js'
