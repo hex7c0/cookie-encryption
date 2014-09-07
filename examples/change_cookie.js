@@ -31,13 +31,16 @@ app.get('/', function(req, res) {
 
     var o = 'write: ' + vault.write(req, 'ciao');
     o += '<br>';
-    vault.cookie = 'new'; // change cookie
-    o += 'write: ' + vault.write(req, 'pippo');
+    // vault.cookie = 'new'; // change cookie
+    o += 'write: ' + vault.write(req, 'pippo', 'new', 'base64');
     res.send(o);
 });
 app.get('/r', function(req, res) {
 
-    res.send('read: ' + vault.read(req));
+    var o = 'read: ' + vault.read(req);
+    o += '<br>';
+    o += 'read: ' + vault.read(req, 'new', 'base64');
+    res.send(o);
 });
 // server starting
 app.listen(3000);
