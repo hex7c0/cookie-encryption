@@ -15,8 +15,8 @@
  */
 // import
 try {
-    var arc4 = require('arc4');
-    var autokey = require('autokey');
+    var arc4;
+    var autokey;
     var crypto = require('crypto');
 } catch (MODULE_NOT_FOUND) {
     console.error(MODULE_NOT_FOUND);
@@ -42,64 +42,7 @@ function SIGNED(my) {
         read: {},
         write: {}
     };
-
-    if ([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ].indexOf(my.cipher) >= 0) {
-        this.cipher = arc4(my.cipher, my.secret);
-        this.encrypt = function(data) {
-
-            return this.cipher.encodeString(data, 'utf8', this.ee);
-        };
-        this.decrypt = function(data) {
-
-            return this.cipher.decodeString(data, this.ee);
-        };
-    } else if (my.cipher === 'autokey') {
-        this.cipher = autokey(my.secret);
-        this.encrypt = function(data) {
-
-            return this.cipher.encodeString(data, 'utf8', this.ee);
-        };
-        this.decrypt = function(data) {
-
-            return this.cipher.decodeString(data, this.ee);
-        };
-    } else if (crypto.getCiphers().indexOf(my.cipher) >= 0) {
-        this.encrypt = function(data) {
-
-            var cipher = crypto.createCipher(my.cipher, my.secret);
-            cipher.update(data, 'utf8');
-            return cipher.final(this.ee);
-        };
-        this.decrypt = function(data) {
-
-            var cipher = crypto.createDecipher(my.cipher, my.secret);
-            cipher.update(data, this.ee);
-            return cipher.final('utf8');
-        };
-    } else {
-        throw new TypeError('cipher not supported');
-    }
-
-    /**
-     * set data to signed cookie
-     * 
-     * @function set
-     * @param {Object} res - response to client
-     * @param {String} data - string for cookie
-     * @return {String}
-     */
-    this.set = function(res, data) {
-
-        my = this.my;
-        return res.cookie(this.ck, data, {
-            domain: my.domain,
-            path: my.path,
-            maxAge: my.age,
-            httpOnly: my.httpOnly,
-            secure: my.secure,
-            signed: true
-        }), data;
-    };
+    this.customization(true);
 }
 /**
  * NORMAL class
@@ -117,9 +60,22 @@ function NORMAL(my) {
         read: {},
         write: {}
     };
+    this.customization(false);
+}
 
-    if ([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ].indexOf(my.cipher) >= 0) {
-        this.cipher = arc4(my.cipher, my.secret);
+/**
+ * customization for class
+ * 
+ * @function customization
+ * @param {Boolean} signed - if signed class
+ */
+SIGNED.prototype.customization = NORMAL.prototype.customization = function(
+                                                                           signed) {
+
+    var my = this.my;
+    if (my.cipher === 'autokey') {
+        autokey = require('autokey'); // lazy load
+        this.cipher = autokey(my.secret);
         this.encrypt = function(data) {
 
             return this.cipher.encodeString(data, 'utf8', this.ee);
@@ -128,8 +84,9 @@ function NORMAL(my) {
 
             return this.cipher.decodeString(data, this.ee);
         };
-    } else if (my.cipher === 'autokey') {
-        this.cipher = autokey(my.secret);
+    } else if ([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ].indexOf(my.cipher) >= 0) {
+        arc4 = require('arc4'); // lazy load
+        this.cipher = arc4(my.cipher, my.secret);
         this.encrypt = function(data) {
 
             return this.cipher.encodeString(data, 'utf8', this.ee);
@@ -172,10 +129,11 @@ function NORMAL(my) {
             maxAge: my.age,
             httpOnly: my.httpOnly,
             secure: my.secure,
-            signed: false
+            signed: signed
         }), data;
     };
-}
+    return;
+};
 
 /**
  * Decrypt information on signed cookie
