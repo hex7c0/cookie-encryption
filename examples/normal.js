@@ -15,7 +15,7 @@
 // import
 try {
     var cookiee = require('../index.min.js'); // use
-                                                // require('cookie-encryption')
+    // require('cookie-encryption')
     var app = require('express')();
     var cookie = require('cookie-parser');
 } catch (MODULE_NOT_FOUND) {
@@ -25,7 +25,7 @@ try {
 
 var vault = cookiee('ciao', {
     cipher: 'blowfish',
-    output: 'base64'
+    encoding: 'base64'
 });
 
 // express routing

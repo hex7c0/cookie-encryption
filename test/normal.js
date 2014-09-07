@@ -30,19 +30,17 @@ try {
  */
 describe('normal', function() {
 
-    var arc4 = '2dc1ba510437';
-    var arc4_b64 = 'LcG6UQQ%3D';
-    var autokey = '%C3%98%C3%8E%C3%9C%C3%9C%C3%9E';
-    var openssl = '%3E%C3%9D%C2%BBdA%C2%95%C3%A2%C2%B8';
+    var arc4 = 'd9d7356dae75d3';
+    var arc4_b64 = '2dc1ba5104';
+    var autokey = 'd8cedcdcde';
+    var openssl = '3eddbb644195e2b8';
 
     describe('arc4', function() {
 
         var app = express();
         before(function(done) {
 
-            var vault = cookiee('hello_world!', {
-                output: 'base64'
-            });
+            var vault = cookiee('hello_world!');
             // express routing
             app.use(cookie('foo'));
             app.get('/', function(req, res) {
@@ -86,10 +84,11 @@ describe('normal', function() {
                                     assert
                                             .equal(convert.toString('hex'), arc4, 'base64');
 
-                                    var exp = new Buffer(res.text);
-                                    // var act = new Buffer('pippo');
-                                    assert
-                                            .deepEqual(exp.toString('hex'), '706970706f000000', '"pippo"');
+                                    var exp = new Buffer(res.text)
+                                            .toString('hex');
+                                    var act = new Buffer('pippo')
+                                            .toString('hex');
+                                    assert.deepEqual(exp, act, '"pippo"');
                                     done();
                                 });
                     });
