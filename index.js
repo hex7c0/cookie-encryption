@@ -37,8 +37,8 @@ try {
 function SIGNED(my) {
 
     this.my = my;
-    this.ck = my.cookie;
-    this.ee = my.encoding;
+    this.cookie = my.cookie;
+    this.encoding = my.encoding;
     this.cache = {
         read: {},
         write: {}
@@ -55,11 +55,11 @@ function SIGNED(my) {
 function NORMAL(my) {
 
     this.my = my;
-    this.ck = my.cookie;
-    this.ee = my.encoding;
+    this.cookie = my.cookie;
+    this.encoding = my.encoding;
     this.cache = {
-        read: {},
-        write: {}
+        read: new Array(''),
+        write: new Array('')
     };
     this.customization(false);
 }
@@ -81,11 +81,11 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
         this.cipher = autokey(my.secret);
         this.encrypt = function(data) {
 
-            return this.cipher.encodeString(data, 'utf8', this.ee);
+            return this.cipher.encode(data, 'utf8', this.encoding);
         };
         this.decrypt = function(data) {
 
-            return this.cipher.decodeString(data, this.ee);
+            return this.cipher.decode(data, this.encoding);
         };
     } else if (getCiphers[0].indexOf(my.cipher) >= 0) {
         if (!arc4) { // lazy load
@@ -94,23 +94,23 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
         this.cipher = arc4(my.cipher, my.secret);
         this.encrypt = function(data) {
 
-            return this.cipher.encodeString(data, 'utf8', this.ee);
+            return this.cipher.encode(data, 'utf8', this.encoding);
         };
         this.decrypt = function(data) {
 
-            return this.cipher.decodeString(data, this.ee);
+            return this.cipher.decode(data, this.encoding);
         };
     } else if (getCiphers[1].indexOf(my.cipher) >= 0) {
         this.encrypt = function(data) {
 
             var cipher = crypto.createCipher(my.cipher, my.secret);
             cipher.update(data, 'utf8');
-            return cipher.final(this.ee);
+            return cipher.final(this.encoding);
         };
         this.decrypt = function(data) {
 
             var cipher = crypto.createDecipher(my.cipher, my.secret);
-            cipher.update(data, this.ee);
+            cipher.update(data, this.encoding);
             return cipher.final('utf8');
         };
     } else {
@@ -128,7 +128,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
     this.set = function(res, data) {
 
         var my = this.my;
-        return res.cookie(this.ck, data, {
+        return res.cookie(this.cookie, data, {
             domain: my.domain,
             path: my.path,
             maxAge: my.age,
@@ -150,17 +150,18 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
 SIGNED.prototype.read = function(req) {
 
     var ck;
-    if (req.signedCookies === undefined || !(ck = req.signedCookies[this.ck])) {
+    if (req.signedCookies === undefined
+            || !(ck = req.signedCookies[this.cookie])) {
         return '';
         /**
          * @todo req.headers.cookie
          */
     }
     try {
-        if (this.cache.read[ck]) {
-            return this.cache.read[ck];
+        if (this.cache.read[0] === ck) {
+            return this.cache.read[0];
         }
-        return this.cache.read[ck] = this.decrypt(ck);
+        return this.cache.read[0] = this.decrypt(ck);
     } catch (TypeError) {
         return '';
     }
@@ -175,17 +176,17 @@ SIGNED.prototype.read = function(req) {
 NORMAL.prototype.read = function(req) {
 
     var ck;
-    if (req.cookies === undefined || !(ck = req.cookies[this.ck])) {
+    if (req.cookies === undefined || !(ck = req.cookies[this.cookie])) {
         return '';
         /**
          * @todo req.headers.cookie
          */
     }
     try {
-        if (this.cache.read[ck]) {
-            return this.cache.read[ck];
+        if (this.cache.read[0] === ck) {
+            return this.cache.read[0];
         }
-        return this.cache.read[ck] = this.decrypt(ck);
+        return this.cache.read[0] = this.decrypt(ck);
     } catch (TypeError) {
         return '';
     }
@@ -201,14 +202,14 @@ NORMAL.prototype.read = function(req) {
 SIGNED.prototype.write = function(req, data) {
 
     var out;
-    if (this.cache.write[data]) {
-        out = this.cache.write[data];
+    if (this.cache.write[0] === data) {
+        out = this.cache.write[0];
     } else {
-        out = this.cache.write[data] = this.encrypt(data);
+        out = this.cache.write[0] = this.encrypt(data);
     }
-    if (req.signedCookies[this.ck] !== out) {
+    if (req.signedCookies[this.cookie] !== out) {
         var res = req.res;
-        req.signedCookies[this.ck] = this.set(res, out);
+        req.signedCookies[this.cookie] = this.set(res, out);
     }
     return out;
 };
@@ -222,14 +223,14 @@ SIGNED.prototype.write = function(req, data) {
 NORMAL.prototype.write = function(req, data) {
 
     var out;
-    if (this.cache.write[data]) {
-        out = this.cache.write[data];
+    if (this.cache.write[0] === data) {
+        out = this.cache.write[0];
     } else {
-        out = this.cache.write[data] = this.encrypt(data);
+        out = this.cache.write[0] = this.encrypt(data);
     }
-    if (req.cookies[this.ck] !== out) {
+    if (req.cookies[this.cookie] !== out) {
         var res = req.res;
-        req.cookies[this.ck] = this.set(res, out);
+        req.cookies[this.cookie] = this.set(res, out);
     }
     return out;
 };
