@@ -18,6 +18,7 @@ try {
     var arc4;
     var autokey;
     var crypto = require('crypto');
+    var getCiphers = [ [ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto.getCiphers() ];
 } catch (MODULE_NOT_FOUND) {
     console.error(MODULE_NOT_FOUND);
     process.exit(1);
@@ -74,7 +75,9 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
 
     var my = this.my;
     if (my.cipher === 'autokey') {
-        autokey = require('autokey'); // lazy load
+        if (!autokey) { // lazy load
+            autokey = require('autokey');
+        }
         this.cipher = autokey(my.secret);
         this.encrypt = function(data) {
 
@@ -84,8 +87,10 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
 
             return this.cipher.decodeString(data, this.ee);
         };
-    } else if ([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ].indexOf(my.cipher) >= 0) {
-        arc4 = require('arc4'); // lazy load
+    } else if (getCiphers[0].indexOf(my.cipher) >= 0) {
+        if (!arc4) { // lazy load
+            arc4 = require('arc4');
+        }
         this.cipher = arc4(my.cipher, my.secret);
         this.encrypt = function(data) {
 
@@ -95,7 +100,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
 
             return this.cipher.decodeString(data, this.ee);
         };
-    } else if (crypto.getCiphers().indexOf(my.cipher) >= 0) {
+    } else if (getCiphers[1].indexOf(my.cipher) >= 0) {
         this.encrypt = function(data) {
 
             var cipher = crypto.createCipher(my.cipher, my.secret);
