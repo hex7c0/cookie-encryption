@@ -1,3 +1,11 @@
+v1.0.3 / 2014-09-08
+==================
+
+  * Fix cache again
+  * Add optional arguments inside `write` `read` methods
+    * @param {String} [cookie] - fast cookie
+    * @param {String} [encoding] - fast encoding
+
 v1.0.2 / 2014-09-07
 ==================
 
