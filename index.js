@@ -4,7 +4,7 @@
  * @module cookie-encryption
  * @package cookie-encryption
  * @subpackage main
- * @version 1.0.0
+ * @version 1.1.0
  * @author hex7c0 <hex7c0@gmail.com>
  * @copyright hex7c0 2014
  * @license GPLv3
@@ -18,7 +18,9 @@ try {
     var arc4;
     var autokey;
     var crypto = require('crypto');
-    var getCiphers = [ [ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto.getCiphers() ];
+    var getCipher = new Array([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto
+            .getCiphers(), crypto.getHashes(), [ 'modp1', 'modp2', 'modp5',
+            'modp14', 'modp15', 'modp16', 'modp17', 'modp18' ], [ 'pbkdf2' ], [ 'autokey' ]);
 } catch (MODULE_NOT_FOUND) {
     console.error(MODULE_NOT_FOUND);
     process.exit(1);
@@ -36,14 +38,17 @@ try {
  */
 function SIGNED(my) {
 
-    this.my = my;
-    this.cookie = my.cookie;
-    this.encoding = my.encoding;
+    this._my = my;
+    this.cookie = this._my.cookie;
+    this.encoding = this._my.encoding;
+    this.decrypt;
+    this.encrypt;
+    this._cipher;
+    this.customization(true);
     this.cache = {
         read: new Object(),
         write: new Object()
     };
-    this.customization(true);
 }
 /**
  * NORMAL class
@@ -54,14 +59,17 @@ function SIGNED(my) {
  */
 function NORMAL(my) {
 
-    this.my = my;
-    this.cookie = my.cookie;
-    this.encoding = my.encoding;
+    this._my = my;
+    this.cookie = this._my.cookie;
+    this.encoding = this._my.encoding;
+    this.decrypt;
+    this.encrypt;
+    this._cipher;
+    this.customization(false);
     this.cache = {
         read: new Object(),
         write: new Object()
     };
-    this.customization(false);
 }
 
 /**
@@ -73,22 +81,35 @@ function NORMAL(my) {
 SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                                                                            signed) {
 
-    var my = this.my;
-    if (my.cipher === 'autokey') {
+    var my = this._my;
+    if (my.cipher === getCipher[4][0]) { // pbkdf2
+        this.encrypt = function(data, encoding) {
+
+            return crypto
+                    .pbkdf2Sync(my.cipher, my.extra[0], my.extra[1], my.extra[2])
+                    .toString(encoding || this.encoding);
+        };
+        this.decrypt = function(data, encoding) {
+
+            throw new TypeError('Pbkdf2 not supported');
+            return;
+        };
+
+    } else if (my.cipher === getCipher[5][0]) { // autokey
         if (!autokey) { // lazy load
             autokey = require('autokey');
         }
-        this.cipher = autokey(my.secret);
+        this._cipher = autokey(my.secret);
         this.encrypt = function(data, encoding) {
 
             if (typeof (data) === 'string') {
                 return 's'
-                        + this.cipher.encodeString(data, 'utf8', encoding
+                        + this._cipher.encodeString(data, 'utf8', encoding
                                 || this.encoding);
             }
             if (Buffer.isBuffer(data)) {
                 return 'b'
-                        + this.cipher.encodeBuffer(data).toString(encoding
+                        + this._cipher.encodeBuffer(data).toString(encoding
                                 || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
@@ -98,31 +119,33 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
 
             if (data[0] === 's') {
                 var raw = data.substring(1, data.length);
-                return this.cipher.decodeString(raw, encoding || this.encoding);
+                return this._cipher
+                        .decodeString(raw, encoding || this.encoding);
             }
             if (data[0] === 'b') {
                 var raw = data.substring(1, data.length);
-                return new Buffer(this.cipher.decodeString(raw, encoding
+                return new Buffer(this._cipher.decodeString(raw, encoding
                         || this.encoding));
             }
             throw new TypeError('Not a string or buffer');
             return;
         };
-    } else if (getCiphers[0].indexOf(my.cipher) >= 0) {
+
+    } else if (getCipher[0].indexOf(my.cipher) >= 0) { // arc4
         if (!arc4) { // lazy load
             arc4 = require('arc4');
         }
-        this.cipher = arc4(my.cipher, my.secret);
+        this._cipher = arc4(my.cipher, my.secret);
         this.encrypt = function(data, encoding) {
 
             if (typeof (data) === 'string') {
                 return 's'
-                        + this.cipher.encodeString(data, 'utf8', encoding
+                        + this._cipher.encodeString(data, 'utf8', encoding
                                 || this.encoding);
             }
             if (Buffer.isBuffer(data)) {
                 return 'b'
-                        + this.cipher.encodeBuffer(data).toString(encoding
+                        + this._cipher.encodeBuffer(data).toString(encoding
                                 || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
@@ -132,17 +155,19 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
 
             if (data[0] === 's') {
                 var raw = data.substring(1, data.length);
-                return this.cipher.decodeString(raw, encoding || this.encoding);
+                return this._cipher
+                        .decodeString(raw, encoding || this.encoding);
             }
             if (data[0] === 'b') {
                 var raw = data.substring(1, data.length);
-                return new Buffer(this.cipher.decodeString(raw, encoding
+                return new Buffer(this._cipher.decodeString(raw, encoding
                         || this.encoding));
             }
             throw new TypeError('Not a string or buffer');
             return;
         };
-    } else if (getCiphers[1].indexOf(my.cipher) >= 0) {
+
+    } else if (getCipher[1].indexOf(my.cipher) >= 0) { // ciphers
         this.encrypt = function(data, encoding) {
 
             var cipher = crypto.createCipher(my.cipher, my.secret);
@@ -154,6 +179,46 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
             var cipher = crypto.createDecipher(my.cipher, my.secret);
             cipher.update(data, encoding || this.encoding);
             return cipher.final('utf8');
+        };
+
+    } else if (getCipher[2].indexOf(my.cipher) >= 0) {
+        if (my.extra[0] === undefined) { // hash
+            this.encrypt = function(data, encoding) {
+
+                var cipher = crypto.createHash(my.cipher);
+                cipher.update(data, 'utf8');
+                return cipher.digest(encoding || this.encoding);
+            };
+            this.decrypt = function(data, encoding) {
+
+                throw new TypeError('Hash not supported');
+                return;
+            };
+
+        } else { // hmac
+            this.encrypt = function(data, encoding) {
+
+                var cipher = crypto.createHmac(my.cipher, my.secret);
+                cipher.update(data, 'utf8');
+                return cipher.digest(encoding || this.encoding);
+            };
+            this.decrypt = function(data, encoding) {
+
+                throw new TypeError('Hmac not supported');
+                return;
+            };
+        }
+
+    } else if (getCipher[3].indexOf(my.cipher) >= 0) { // DiffieHellman
+        this.encrypt = function(data, encoding) {
+
+            var cipher = crypto.getDiffieHellman(my.cipher);
+            return cipher.generateKeys().toString(encoding || this.encoding);
+        };
+        this.decrypt = function(data, encoding) {
+
+            throw new TypeError('DiffieHellman not supported');
+            return;
         };
     } else {
         throw new TypeError('Cipher not supported');
@@ -170,7 +235,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
      */
     this.set = function(res, data, cookie) {
 
-        var my = this.my;
+        var my = this._my;
         return res.cookie(cookie || this.cookie, data, {
             domain: my.domain,
             path: my.path,
@@ -320,11 +385,25 @@ module.exports = function cookiee(secret, options) {
         httpOnly: Boolean(options.httpOnly),
         secure: Boolean(options.secure),
         signed: Boolean(options.signed),
-        encoding: String(options.encoding || 'hex')
+        encoding: String(options.encoding || 'hex'),
+        extra: Array.isArray(options.extra) == true ? options.extra
+                : new Array()
     };
 
     if (Boolean(options.signed)) {
         return new SIGNED(my);
     }
     return new NORMAL(my);
+};
+
+/**
+ * get supported ciphers
+ * 
+ * @exports getCiphers
+ * @function getCiphers
+ * @return {Array}
+ */
+module.exports.getCiphers = function getCiphers() {
+
+    return getCipher;
 };
