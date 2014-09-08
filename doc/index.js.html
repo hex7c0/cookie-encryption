@@ -42,9 +42,10 @@
  */
 // import
 try {
-    var arc4 = require('arc4');
-    var autokey = require('autokey');
+    var arc4;
+    var autokey;
     var crypto = require('crypto');
+    var getCiphers = [ [ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto.getCiphers() ];
 } catch (MODULE_NOT_FOUND) {
     console.error(MODULE_NOT_FOUND);
     process.exit(1);
@@ -63,70 +64,13 @@ try {
 function SIGNED(my) {
 
     this.my = my;
-    this.ck = my.cookie;
-    this.ee = my.encoding;
+    this.cookie = my.cookie;
+    this.encoding = my.encoding;
     this.cache = {
-        read: {},
-        write: {}
+        read: new Object(),
+        write: new Object()
     };
-
-    if ([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ].indexOf(my.cipher) >= 0) {
-        this.cipher = arc4(my.cipher, my.secret);
-        this.encrypt = function(data) {
-
-            return this.cipher.encodeString(data, 'utf8', this.ee);
-        };
-        this.decrypt = function(data) {
-
-            return this.cipher.decodeString(data, this.ee);
-        };
-    } else if (my.cipher === 'autokey') {
-        this.cipher = autokey(my.secret);
-        this.encrypt = function(data) {
-
-            return this.cipher.encodeString(data, 'utf8', this.ee);
-        };
-        this.decrypt = function(data) {
-
-            return this.cipher.decodeString(data, this.ee);
-        };
-    } else if (crypto.getCiphers().indexOf(my.cipher) >= 0) {
-        this.encrypt = function(data) {
-
-            var cipher = crypto.createCipher(my.cipher, my.secret);
-            cipher.update(data, 'utf8');
-            return cipher.final(this.ee);
-        };
-        this.decrypt = function(data) {
-
-            var cipher = crypto.createDecipher(my.cipher, my.secret);
-            cipher.update(data, this.ee);
-            return cipher.final('utf8');
-        };
-    } else {
-        throw new TypeError('cipher not supported');
-    }
-
-    /**
-     * set data to signed cookie
-     * 
-     * @function set
-     * @param {Object} res - response to client
-     * @param {String} data - string for cookie
-     * @return {String}
-     */
-    this.set = function(res, data) {
-
-        my = this.my;
-        return res.cookie(this.ck, data, {
-            domain: my.domain,
-            path: my.path,
-            maxAge: my.age,
-            httpOnly: my.httpOnly,
-            secure: my.secure,
-            signed: true
-        }), data;
-    };
+    this.customization(true);
 }
 /**
  * NORMAL class
@@ -138,48 +82,104 @@ function SIGNED(my) {
 function NORMAL(my) {
 
     this.my = my;
-    this.ck = my.cookie;
-    this.ee = my.encoding;
+    this.cookie = my.cookie;
+    this.encoding = my.encoding;
     this.cache = {
-        read: {},
-        write: {}
+        read: new Object(),
+        write: new Object()
     };
+    this.customization(false);
+}
 
-    if ([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ].indexOf(my.cipher) >= 0) {
-        this.cipher = arc4(my.cipher, my.secret);
-        this.encrypt = function(data) {
+/**
+ * customization for class
+ * 
+ * @function customization
+ * @param {Boolean} signed - if signed class
+ */
+SIGNED.prototype.customization = NORMAL.prototype.customization = function(
+                                                                           signed) {
 
-            return this.cipher.encodeString(data, 'utf8', this.ee);
-        };
-        this.decrypt = function(data) {
-
-            return this.cipher.decodeString(data, this.ee);
-        };
-    } else if (my.cipher === 'autokey') {
+    var my = this.my;
+    if (my.cipher === 'autokey') {
+        if (!autokey) { // lazy load
+            autokey = require('autokey');
+        }
         this.cipher = autokey(my.secret);
-        this.encrypt = function(data) {
+        this.encrypt = function(data, encoding) {
 
-            return this.cipher.encodeString(data, 'utf8', this.ee);
+            if (typeof (data) === 'string') {
+                return 's'
+                        + this.cipher.encodeString(data, 'utf8', encoding
+                                || this.encoding);
+            }
+            if (Buffer.isBuffer(data)) {
+                return 'b'
+                        + this.cipher.encodeBuffer(data).toString(encoding
+                                || this.encoding);
+            }
+            throw new TypeError('Not a string or buffer');
         };
-        this.decrypt = function(data) {
+        this.decrypt = function(data, encoding) {
 
-            return this.cipher.decodeString(data, this.ee);
+            if (data[0] === 's') {
+                var raw = data.substring(1, data.length);
+                return this.cipher.decodeString(raw, encoding || this.encoding);
+            }
+            if (data[0] === 'b') {
+                var raw = data.substring(1, data.length);
+                return new Buffer(this.cipher.decodeString(raw, encoding
+                        || this.encoding));
+            }
+            throw new TypeError('Not a string or buffer');
         };
-    } else if (crypto.getCiphers().indexOf(my.cipher) >= 0) {
-        this.encrypt = function(data) {
+    } else if (getCiphers[0].indexOf(my.cipher) >= 0) {
+        if (!arc4) { // lazy load
+            arc4 = require('arc4');
+        }
+        this.cipher = arc4(my.cipher, my.secret);
+        this.encrypt = function(data, encoding) {
+
+            if (typeof (data) === 'string') {
+                return 's'
+                        + this.cipher.encodeString(data, 'utf8', encoding
+                                || this.encoding);
+            }
+            if (Buffer.isBuffer(data)) {
+                return 'b'
+                        + this.cipher.encodeBuffer(data).toString(encoding
+                                || this.encoding);
+            }
+            throw new TypeError('Not a string or buffer');
+        };
+        this.decrypt = function(data, encoding) {
+
+            if (data[0] === 's') {
+                var raw = data.substring(1, data.length);
+                return this.cipher.decodeString(raw, encoding || this.encoding);
+            }
+            if (data[0] === 'b') {
+                var raw = data.substring(1, data.length);
+                return new Buffer(this.cipher.decodeString(raw, encoding
+                        || this.encoding));
+            }
+            throw new TypeError('Not a string or buffer');
+        };
+    } else if (getCiphers[1].indexOf(my.cipher) >= 0) {
+        this.encrypt = function(data, encoding) {
 
             var cipher = crypto.createCipher(my.cipher, my.secret);
             cipher.update(data, 'utf8');
-            return cipher.final(this.ee);
+            return cipher.final(encoding || this.encoding);
         };
-        this.decrypt = function(data) {
+        this.decrypt = function(data, encoding) {
 
             var cipher = crypto.createDecipher(my.cipher, my.secret);
-            cipher.update(data, this.ee);
+            cipher.update(data, encoding || this.encoding);
             return cipher.final('utf8');
         };
     } else {
-        throw new TypeError('cipher not supported');
+        throw new TypeError('Cipher not supported');
     }
 
     /**
@@ -188,71 +188,80 @@ function NORMAL(my) {
      * @function set
      * @param {Object} res - response to client
      * @param {String} data - string for cookie
+     * @param {String} [cookie] - fast cookie
      * @return {String}
      */
-    this.set = function(res, data) {
+    this.set = function(res, data, cookie) {
 
         var my = this.my;
-        return res.cookie(this.ck, data, {
+        return res.cookie(cookie || this.cookie, data, {
             domain: my.domain,
             path: my.path,
             maxAge: my.age,
             httpOnly: my.httpOnly,
             secure: my.secure,
-            signed: false
+            signed: signed
         }), data;
     };
-}
+    return;
+};
 
 /**
  * Decrypt information on signed cookie
  * 
  * @function read
  * @param {Object} req - client request
+ * @param {String} [cookie] - fast cookie
+ * @param {String} [encoding] - fast encoding
  * @return {String}
  */
-SIGNED.prototype.read = function(req) {
+SIGNED.prototype.read = function(req, cookie, encoding) {
 
     var ck;
-    if (req.signedCookies === undefined || !(ck = req.signedCookies[this.ck])) {
+    if (req.signedCookies === undefined
+            || !(ck = req.signedCookies[cookie || this.cookie])) {
         return '';
         /**
          * @todo req.headers.cookie
          */
     }
-    try {
-        if (this.cache.read[ck]) {
-            return this.cache.read[ck];
-        }
-        return this.cache.read[ck] = this.decrypt(ck);
-    } catch (TypeError) {
-        return '';
+    // try {
+    if (this.cache.read[ck]) {
+        return this.cache.read[ck];
     }
+    this.cache.read = new Object();
+    return this.cache.read[ck] = this.decrypt(ck, encoding);
+    // } catch (TypeError) {
+    // return '';
+    // }
 };
 /**
  * Decrypt information on cookie
  * 
  * @function read
  * @param {Object} req - client request
+ * @param {String} [cookie] - fast cookie
+ * @param {String} [encoding] - fast encoding
  * @return {String}
  */
-NORMAL.prototype.read = function(req) {
+NORMAL.prototype.read = function(req, cookie, encoding) {
 
     var ck;
-    if (req.cookies === undefined || !(ck = req.cookies[this.ck])) {
+    if (req.cookies === undefined || !(ck = req.cookies[cookie || this.cookie])) {
         return '';
         /**
          * @todo req.headers.cookie
          */
     }
-    try {
-        if (this.cache.read[ck]) {
-            return this.cache.read[ck];
-        }
-        return this.cache.read[ck] = this.decrypt(ck);
-    } catch (TypeError) {
-        return '';
+    // try {
+    if (this.cache.read[ck]) {
+        return this.cache.read[ck];
     }
+    this.cache.read = new Object();
+    return this.cache.read[ck] = this.decrypt(ck, encoding);
+    // } catch (TypeError) {
+    // return '';
+    // }
 };
 
 /**
@@ -261,18 +270,22 @@ NORMAL.prototype.read = function(req) {
  * @function write
  * @param {Object} req - client request
  * @param {String} data - data to write on cookie
+ * @param {String} [cookie] - fast cookie
+ * @param {String} [encoding] - fast encoding
  */
-SIGNED.prototype.write = function(req, data) {
+SIGNED.prototype.write = function(req, data, cookie, encoding) {
 
     var out;
+    var ck = cookie || this.cookie;
     if (this.cache.write[data]) {
         out = this.cache.write[data];
     } else {
-        out = this.cache.write[data] = this.encrypt(data);
+        this.cache.write = new Object();
+        out = this.cache.write[data] = this.encrypt(data, encoding);
     }
-    if (req.signedCookies[this.ck] !== out) {
+    if (req.signedCookies[ck] !== out) {
         var res = req.res;
-        req.signedCookies[this.ck] = this.set(res, out);
+        req.signedCookies[ck] = this.set(res, out, cookie);
     }
     return out;
 };
@@ -282,18 +295,22 @@ SIGNED.prototype.write = function(req, data) {
  * @function write
  * @param {Object} req - client request
  * @param {String} data - data to write on cookie
+ * @param {String} [cookie] - fast cookie
+ * @param {String} [encoding] - fast encoding
  */
-NORMAL.prototype.write = function(req, data) {
+NORMAL.prototype.write = function(req, data, cookie, encoding) {
 
     var out;
+    var ck = cookie || this.cookie;
     if (this.cache.write[data]) {
         out = this.cache.write[data];
     } else {
-        out = this.cache.write[data] = this.encrypt(data);
+        this.cache.write = new Object();
+        out = this.cache.write[data] = this.encrypt(data, encoding);
     }
-    if (req.cookies[this.ck] !== out) {
+    if (req.cookies[ck] !== out) {
         var res = req.res;
-        req.cookies[this.ck] = this.set(res, out);
+        req.cookies[ck] = this.set(res, out, cookie);
     }
     return out;
 };
@@ -350,7 +367,7 @@ module.exports = function cookiee(secret, options) {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a> on Sun Sep 07 2014 09:48:49 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a> on Mon Sep 08 2014 12:35:35 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
