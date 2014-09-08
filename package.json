@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3",
   "name": "cookie-encryption",
   "description": "encrypt/decrypt data to store on cookie, with memorization",
   "keywords": [
@@ -27,7 +27,7 @@
   },
   "main": "index.min.js",
   "dependencies": {
-    "arc4": "3.0.2",
+    "arc4": "3.0.3",
     "autokey": "2.0.1"
   },
   "devDependencies": {

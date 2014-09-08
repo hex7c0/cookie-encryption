@@ -92,6 +92,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                                 || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
+            return;
         };
         this.decrypt = function(data, encoding) {
 
@@ -105,6 +106,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                         || this.encoding));
             }
             throw new TypeError('Not a string or buffer');
+            return;
         };
     } else if (getCiphers[0].indexOf(my.cipher) >= 0) {
         if (!arc4) { // lazy load
@@ -124,6 +126,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                                 || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
+            return;
         };
         this.decrypt = function(data, encoding) {
 
@@ -137,6 +140,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                         || this.encoding));
             }
             throw new TypeError('Not a string or buffer');
+            return;
         };
     } else if (getCiphers[1].indexOf(my.cipher) >= 0) {
         this.encrypt = function(data, encoding) {

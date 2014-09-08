@@ -5,6 +5,8 @@ v1.0.3 / 2014-09-08
   * Add optional arguments inside `write` `read` methods
     * @param {String} [cookie] - fast cookie
     * @param {String} [encoding] - fast encoding
+  * Buffer encoding
+  * Not support for Array, like `crypto` module
 
 v1.0.2 / 2014-09-07
 ==================
