@@ -5,7 +5,14 @@
 [![Dependency Status](https://david-dm.org/hex7c0/cookie-encryption/status.svg)](https://david-dm.org/hex7c0/cookie-encryption)
 
 Encrypt/decrypt data to store on cookie, with memorization.
-This class is built with [rc4](https://github.com/hex7c0/arc4), [autokey](https://github.com/hex7c0/autokey) and [nodejs](http://nodejs.org/api/crypto.html#crypto_crypto_getciphers) ciphers.
+This class is built with 
+[arc4 cipher](https://github.com/hex7c0/arc4), 
+[autokey cipher](https://github.com/hex7c0/autokey), 
+[nodejs ciphers](http://nodejs.org/api/crypto.html#crypto_crypto_getciphers), 
+[nodejs hash](http://nodejs.org/api/crypto.html#crypto_crypto_gethashes), 
+[nodejs hmac](http://nodejs.org/api/crypto.html#crypto_crypto_createhmac_algorithm_key), 
+[nodejs pbkdf2](http://nodejs.org/api/crypto.html#crypto_crypto_pbkdf2sync_password_salt_iterations_keylen) and 
+[nodejs diffiehellman](http://nodejs.org/api/crypto.html#crypto_crypto_getdiffiehellman_group_name), 
 
 ## Installation
 
@@ -28,6 +35,13 @@ var cookiee = require('cookie-encryption');
 var vault = cookiee('ciao');
 ```
 
+return ciphers supported
+```js
+var cookiee = require('cookie-encryption');
+
+cookiee('ciao').getCiphers();
+```
+
 ### Methods
 
 write data ('pippo') to selected cookie
@@ -48,7 +62,7 @@ vault.read(req);
 
 #### [options]
 
- - `cipher` - **String** Type of cipher *(default "arc4")*
+ - `cipher` - **String** Type of cipher, grab list from `getCiphers` *(default "arc4")*
  - `domain` - **String** Domain of cookie *(default "null")*
  - `cookie` - **String** Name of cookie *(default "vault")*
  - `path` - **String** Path of cookie *(default "/")*
@@ -57,6 +71,7 @@ vault.read(req);
  - `secure` - **Boolean** Flag for using cookie over TLS/SSL *(default "false")*
  - `signed` - **Boolean** Will use the secret passed to cookieParser(secret) to sign the value *(default "false")*
  - `encoding` - **String** Type of output encoding by [nodejs](http://nodejs.org/api/buffer.html#apicontent) *(default "hex")*
+ - `extra` - **Array** Extra info for `Hmac` ([true] to enable instead of `Hash`) and `pbkdf2` ([salt, iterations, keylen]) *(default "[]")*
 
 ## Examples
 

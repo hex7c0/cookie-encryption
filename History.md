@@ -1,3 +1,15 @@
+v1.1.0 / 2014-09-08
+==================
+
+  * Rename `this.my` to `this._my`
+  * Add "extra" (options)
+  * Add support for:
+    * Hash
+    * Hmac
+    * Pbkdf2
+    * DiffieHellman
+  * `getCiphers` function
+
 v1.0.3 / 2014-09-08
 ==================
 
