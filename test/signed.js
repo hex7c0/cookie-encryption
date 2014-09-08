@@ -29,9 +29,9 @@ try {
  */
 describe('signed', function() {
 
-    var arc4 = 'b3703675cd5b6b9d74e1e0855302dcf6c16d9b93611357a75e4d8592cd4bbe5b1d48f44ac8e36f9847da';
-    var arc4_b64 = 's%3A2dc1ba5104.eCFUwLc9sFtm5NhE1enXk%2Fks1LvlsdSPRKyONvmEfaE';
-    var autokey = 's%3Ad8cedcdcde.2aTm5wAkqNM8itmtrMMuCvMsqgQZS3czmfhLacnkr%2FI';
+    var arc4 = 'b3702cd9d7356dae75d380295b229fed8cdd2aaa1c5a0cc9a36c776b8796d12964430df1c9ff5581f2df';
+    var arc4_b64 = 's%3As2dc1ba5104.ApWyKf7YzdKqocWgzJo2x3a4eW0SlkQw3xyf9VgfLfk';
+    var autokey = 's%3Asd8cedcdcde.0Xcm8diP3%2FanAJwZzTl43p6QRkGx5HKpZ11XEIdT3NU';
     var openssl = 's%3A3eddbb644195e2b8.GJrio0U8v%2FzA6Oxs66GOJ6sVbhkKHd1CN02I1W3DzxQ';
 
     describe('arc4', function() {

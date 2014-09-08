@@ -28,165 +28,299 @@ try {
 /*
  * test module
  */
-describe('normal', function() {
+describe('type', function() {
 
-    var string = 'ciao';
-    var array = [ 1, 2, 3, 4, 5 ];
-    var buffer1 = new Buffer(string);
-    var buffer2 = new Buffer(array);
+    describe('own', function() {
 
-    describe('string', function() {
+        var string = 'ciao';
+        var array = [ 1, 2, 3, 4, 5 ];
+        var buffer1 = new Buffer(string);
+        var buffer2 = new Buffer(array);
 
-        var app = express();
-        before(function(done) {
+        describe('string', function() {
 
-            var vault = cookiee('hello_world!');
-            // express routing
-            app.use(cookie('foo'));
-            app.get('/', function(req, res) {
+            var app = express();
+            before(function(done) {
 
-                res.send(vault.write(req, string));
+                var vault = cookiee('hello_world!');
+                // express routing
+                app.use(cookie('foo'));
+                app.get('/', function(req, res) {
+
+                    res.send(vault.write(req, string));
+                });
+                app.get('/r', function(req, res) {
+
+                    res.send(vault.read(req));
+                });
+                done();
             });
-            app.get('/r', function(req, res) {
 
-                res.send(vault.read(req));
+            it('should return string', function(done) {
+
+                request(app).get('/').expect(200).end(function(err, res) {
+
+                    if (err)
+                        return done(err);
+                    var cookie = res.headers['set-cookie'][0];
+
+                    request(app).get('/r').set('Cookie', cookie).expect(200)
+                            .end(function(err, res) {
+
+                                if (err)
+                                    return done(err);
+                                assert.equal(res.text, string);
+                                done();
+                            });
+                });
             });
-            done();
         });
 
-        it('nothing - should return string', function(done) {
+        // describe('array', function() {
+        //
+        // var app = express();
+        // before(function(done) {
+        //
+        // var vault = cookiee('hello_world!');
+        // // express routing
+        // app.use(cookie('foo'));
+        // app.get('/', function(req, res) {
+        //
+        // res.send(vault.write(req, array));
+        // });
+        // app.get('/r', function(req, res) {
+        //
+        // res.send(vault.read(req));
+        // });
+        // done();
+        // });
+        //
+        // it('should return array', function(done) {
+        //
+        // request(app).get('/').expect(200).end(function(err, res) {
+        //
+        // if (err)
+        // return done(err);
+        // var cookie = res.headers['set-cookie'][0];
+        //
+        // request(app).get('/r').set('Cookie', cookie).expect(200)
+        // .end(function(err, res) {
+        //
+        // if (err)
+        // return done(err);
+        // assert.equal(res.text, '[1,2,3,4,5]');
+        // done();
+        // });
+        // });
+        // });
+        // });
 
-            request(app).get('/').expect(200).end(function(err, res) {
+        describe('buffer1', function() {
 
-                if (err)
-                    return done(err);
-                var cookie = res.headers['set-cookie'][0];
+            var app = express();
+            before(function(done) {
 
-                request(app).get('/r').set('Cookie', cookie).expect(200)
-                        .end(function(err, res) {
+                var vault = cookiee('hello_world!');
+                // express routing
+                app.use(cookie('foo'));
+                app.get('/', function(req, res) {
 
-                            if (err)
-                                return done(err);
-                            assert.deepEqual(res.text, string);
-                            done();
-                        });
+                    res.send(vault.write(req, buffer1));
+                });
+                app.get('/r', function(req, res) {
+
+                    res.send(vault.read(req));
+                });
+                done();
+            });
+
+            it('should return buffer2', function(done) {
+
+                request(app).get('/').expect(200).end(function(err, res) {
+
+                    if (err)
+                        return done(err);
+                    var cookie = res.headers['set-cookie'][0];
+
+                    request(app).get('/r').set('Cookie', cookie).expect(200)
+                            .end(function(err, res) {
+
+                                if (err)
+                                    return done(err);
+                                assert.equal(res.text, buffer1);
+                                done();
+                            });
+                });
+            });
+        });
+
+        describe('buffer2', function() {
+
+            var app = express();
+            before(function(done) {
+
+                var vault = cookiee('hello_world!');
+                // express routing
+                app.use(cookie('foo'));
+                app.get('/', function(req, res) {
+
+                    res.send(vault.write(req, buffer2));
+                });
+                app.get('/r', function(req, res) {
+
+                    res.send(vault.read(req));
+                });
+                done();
+            });
+
+            it('should return buffer2', function(done) {
+
+                request(app).get('/').expect(200).end(function(err, res) {
+
+                    if (err)
+                        return done(err);
+                    var cookie = res.headers['set-cookie'][0];
+
+                    request(app).get('/r').set('Cookie', cookie).expect(200)
+                            .end(function(err, res) {
+
+                                if (err)
+                                    return done(err);
+                                assert.equal(res.text, buffer2);
+                                done();
+                            });
+                });
             });
         });
     });
 
-    describe('array', function() {
+    describe('openssl', function() {
 
-        var app = express();
-        before(function(done) {
+        var string = 'ciao';
+        var array = [ 1, 2, 3, 4, 5 ];
+        var buffer1 = new Buffer(string);
+        var buffer2 = new Buffer(array);
 
-            var vault = cookiee('hello_world!');
-            // express routing
-            app.use(cookie('foo'));
-            app.get('/', function(req, res) {
+        describe('string', function() {
 
-                res.send(vault.write(req, array));
+            var app = express();
+            before(function(done) {
+
+                var vault = cookiee('hello_world!', {
+                    cipher: 'des'
+                });
+                // express routing
+                app.use(cookie('foo'));
+                app.get('/', function(req, res) {
+
+                    res.send(vault.write(req, string));
+                });
+                app.get('/r', function(req, res) {
+
+                    res.send(vault.read(req));
+                });
+                done();
             });
-            app.get('/r', function(req, res) {
 
-                res.send(vault.read(req));
-            });
-            done();
-        });
+            it('should return string', function(done) {
 
-        it('nothing - should return array', function(done) {
+                request(app).get('/').expect(200).end(function(err, res) {
 
-            request(app).get('/').expect(200).end(function(err, res) {
+                    if (err)
+                        return done(err);
+                    var cookie = res.headers['set-cookie'][0];
 
-                if (err)
-                    return done(err);
-                var cookie = res.headers['set-cookie'][0];
+                    request(app).get('/r').set('Cookie', cookie).expect(200)
+                            .end(function(err, res) {
 
-                request(app).get('/r').set('Cookie', cookie).expect(200)
-                        .end(function(err, res) {
-
-                            if (err)
-                                return done(err);
-                            assert.deepEqual(res.text, '[1,2,3,4,5]');
-                            done();
-                        });
-            });
-        });
-    });
-
-    describe('buffer1', function() {
-
-        var app = express();
-        before(function(done) {
-
-            var vault = cookiee('hello_world!');
-            // express routing
-            app.use(cookie('foo'));
-            app.get('/', function(req, res) {
-
-                res.send(vault.write(req, buffer1));
-            });
-            app.get('/r', function(req, res) {
-
-                res.send(vault.read(req));
-            });
-            done();
-        });
-
-        it('nothing - should return buffer2', function(done) {
-
-            request(app).get('/').expect(200).end(function(err, res) {
-
-                if (err)
-                    return done(err);
-                var cookie = res.headers['set-cookie'][0];
-
-                request(app).get('/r').set('Cookie', cookie).expect(200)
-                        .end(function(err, res) {
-
-                            if (err)
-                                return done(err);
-                            assert.deepEqual(res.text, '[99,105,97,111]');
-                            done();
-                        });
+                                if (err)
+                                    return done(err);
+                                assert.equal(res.text, string);
+                                done();
+                            });
+                });
             });
         });
-    });
 
-    describe('buffer2', function() {
+        describe('buffer1', function() {
 
-        var app = express();
-        before(function(done) {
+            var app = express();
+            before(function(done) {
 
-            var vault = cookiee('hello_world!');
-            // express routing
-            app.use(cookie('foo'));
-            app.get('/', function(req, res) {
+                var vault = cookiee('hello_world!', {
+                    cipher: 'des'
+                });
+                // express routing
+                app.use(cookie('foo'));
+                app.get('/', function(req, res) {
 
-                res.send(vault.write(req, buffer2));
+                    res.send(vault.write(req, buffer1));
+                });
+                app.get('/r', function(req, res) {
+
+                    res.send(vault.read(req));
+                });
+                done();
             });
-            app.get('/r', function(req, res) {
 
-                res.send(vault.read(req));
+            it('should return buffer2', function(done) {
+
+                request(app).get('/').expect(200).end(function(err, res) {
+
+                    if (err)
+                        return done(err);
+                    var cookie = res.headers['set-cookie'][0];
+
+                    request(app).get('/r').set('Cookie', cookie).expect(200)
+                            .end(function(err, res) {
+
+                                if (err)
+                                    return done(err);
+                                assert.equal(res.text, buffer1);
+                                done();
+                            });
+                });
             });
-            done();
         });
 
-        it('nothing - should return buffer2', function(done) {
+        describe('buffer2', function() {
 
-            request(app).get('/').expect(200).end(function(err, res) {
+            var app = express();
+            before(function(done) {
 
-                if (err)
-                    return done(err);
-                var cookie = res.headers['set-cookie'][0];
+                var vault = cookiee('hello_world!', {
+                    cipher: 'des'
+                });
+                // express routing
+                app.use(cookie('foo'));
+                app.get('/', function(req, res) {
 
-                request(app).get('/r').set('Cookie', cookie).expect(200)
-                        .end(function(err, res) {
+                    res.send(vault.write(req, buffer2));
+                });
+                app.get('/r', function(req, res) {
 
-                            if (err)
-                                return done(err);
-                            assert.deepEqual(res.text, '[1,2,3,4,5]');
-                            done();
-                        });
+                    res.send(vault.read(req));
+                });
+                done();
+            });
+
+            it('should return buffer2', function(done) {
+
+                request(app).get('/').expect(200).end(function(err, res) {
+
+                    if (err)
+                        return done(err);
+                    var cookie = res.headers['set-cookie'][0];
+
+                    request(app).get('/r').set('Cookie', cookie).expect(200)
+                            .end(function(err, res) {
+
+                                if (err)
+                                    return done(err);
+                                assert.equal(res.text, buffer2);
+                                done();
+                            });
+                });
             });
         });
     });

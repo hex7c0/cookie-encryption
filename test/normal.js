@@ -30,9 +30,9 @@ try {
  */
 describe('normal', function() {
 
-    var arc4 = 'd9d7356dae75d3';
-    var arc4_b64 = '2dc1ba5104';
-    var autokey = 'd8cedcdcde';
+    var arc4 = 'b0b706e94410dc';
+    var arc4_b64 = 'sLcG6UQQ%3D';
+    var autokey = 'sd8cedcdcde';
     var openssl = '3eddbb644195e2b8';
 
     describe('arc4', function() {
@@ -40,7 +40,9 @@ describe('normal', function() {
         var app = express();
         before(function(done) {
 
-            var vault = cookiee('hello_world!');
+            var vault = cookiee('hello_world!', {
+                encoding: 'base64'
+            });
             // express routing
             app.use(cookie('foo'));
             app.get('/', function(req, res) {
