@@ -81,11 +81,30 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
         this.cipher = autokey(my.secret);
         this.encrypt = function(data, encoding) {
 
-            return this.cipher.encode(data, 'utf8', encoding || this.encoding);
+            if (typeof (data) === 'string') {
+                return 's'
+                        + this.cipher.encodeString(data, 'utf8', encoding
+                                || this.encoding);
+            }
+            if (Buffer.isBuffer(data)) {
+                return 'b'
+                        + this.cipher.encodeBuffer(data).toString(encoding
+                                || this.encoding);
+            }
+            throw new TypeError('Not a string or buffer');
         };
         this.decrypt = function(data, encoding) {
 
-            return this.cipher.decode(data, encoding || this.encoding);
+            if (data[0] === 's') {
+                var raw = data.substring(1, data.length);
+                return this.cipher.decodeString(raw, encoding || this.encoding);
+            }
+            if (data[0] === 'b') {
+                var raw = data.substring(1, data.length);
+                return new Buffer(this.cipher.decodeString(raw, encoding
+                        || this.encoding));
+            }
+            throw new TypeError('Not a string or buffer');
         };
     } else if (getCiphers[0].indexOf(my.cipher) >= 0) {
         if (!arc4) { // lazy load
@@ -94,11 +113,30 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
         this.cipher = arc4(my.cipher, my.secret);
         this.encrypt = function(data, encoding) {
 
-            return this.cipher.encode(data, 'utf8', encoding || this.encoding);
+            if (typeof (data) === 'string') {
+                return 's'
+                        + this.cipher.encodeString(data, 'utf8', encoding
+                                || this.encoding);
+            }
+            if (Buffer.isBuffer(data)) {
+                return 'b'
+                        + this.cipher.encodeBuffer(data).toString(encoding
+                                || this.encoding);
+            }
+            throw new TypeError('Not a string or buffer');
         };
         this.decrypt = function(data, encoding) {
 
-            return this.cipher.decode(data, encoding || this.encoding);
+            if (data[0] === 's') {
+                var raw = data.substring(1, data.length);
+                return this.cipher.decodeString(raw, encoding || this.encoding);
+            }
+            if (data[0] === 'b') {
+                var raw = data.substring(1, data.length);
+                return new Buffer(this.cipher.decodeString(raw, encoding
+                        || this.encoding));
+            }
+            throw new TypeError('Not a string or buffer');
         };
     } else if (getCiphers[1].indexOf(my.cipher) >= 0) {
         this.encrypt = function(data, encoding) {
@@ -114,7 +152,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
             return cipher.final('utf8');
         };
     } else {
-        throw new TypeError('cipher not supported');
+        throw new TypeError('Cipher not supported');
     }
 
     /**
@@ -160,15 +198,15 @@ SIGNED.prototype.read = function(req, cookie, encoding) {
          * @todo req.headers.cookie
          */
     }
-    try {
-        if (this.cache.read[ck]) {
-            return this.cache.read[ck];
-        }
-        this.cache.read = new Object();
-        return this.cache.read[ck] = this.decrypt(ck, encoding);
-    } catch (TypeError) {
-        return '';
+    // try {
+    if (this.cache.read[ck]) {
+        return this.cache.read[ck];
     }
+    this.cache.read = new Object();
+    return this.cache.read[ck] = this.decrypt(ck, encoding);
+    // } catch (TypeError) {
+    // return '';
+    // }
 };
 /**
  * Decrypt information on cookie
@@ -188,15 +226,15 @@ NORMAL.prototype.read = function(req, cookie, encoding) {
          * @todo req.headers.cookie
          */
     }
-    try {
-        if (this.cache.read[ck]) {
-            return this.cache.read[ck];
-        }
-        this.cache.read = new Object();
-        return this.cache.read[ck] = this.decrypt(ck, encoding);
-    } catch (TypeError) {
-        return '';
+    // try {
+    if (this.cache.read[ck]) {
+        return this.cache.read[ck];
     }
+    this.cache.read = new Object();
+    return this.cache.read[ck] = this.decrypt(ck, encoding);
+    // } catch (TypeError) {
+    // return '';
+    // }
 };
 
 /**
