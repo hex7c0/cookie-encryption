@@ -77,7 +77,7 @@ optional arguments inside of previous methods
  - `secure` - **Boolean** Flag for using cookie over TLS/SSL *(default "false")*
  - `signed` - **Boolean** Will use the secret passed to cookieParser(secret) to sign the value *(default "false")*
  - `encoding` - **String** Type of output encoding by [nodejs](http://nodejs.org/api/buffer.html#apicontent) *(default "hex")*
- - `extra` - **Array** Extra info for `Hmac` (`[true] to enable instead of `Hash`) and `pbkdf2` (`[salt, iterations, keylen]`) *(default "`[ ]`")*
+ - `extra` - **Array** Extra info for `Hmac` (`[true]` to enable instead of `Hash`) and `pbkdf2` (`[salt, iterations, keylen]`) *(default "`[ ]`")*
 
 ## Examples
 
