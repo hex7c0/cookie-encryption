@@ -103,29 +103,21 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
         this.encrypt = function(data, encoding) {
 
             if (typeof (data) === 'string') {
-                return 's'
-                        + this._cipher.encodeString(data, 'utf8', encoding
-                                || this.encoding);
+                return this._cipher.encodeString(data, 'utf8', encoding
+                        || this.encoding);
             }
             if (Buffer.isBuffer(data)) {
-                return 'b'
-                        + this._cipher.encodeBuffer(data).toString(encoding
-                                || this.encoding);
+                return this._cipher.encodeBuffer(data).toString(encoding
+                        || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
             return;
         };
         this.decrypt = function(data, encoding) {
 
-            if (data[0] === 's') {
-                var raw = data.substring(1, data.length);
-                return this._cipher
-                        .decodeString(raw, encoding || this.encoding);
-            }
-            if (data[0] === 'b') {
-                var raw = data.substring(1, data.length);
-                return new Buffer(this._cipher.decodeString(raw, encoding
-                        || this.encoding));
+            if (typeof (data) === 'string') {
+                return this._cipher.decodeString(data, encoding
+                        || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
             return;
@@ -139,29 +131,21 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
         this.encrypt = function(data, encoding) {
 
             if (typeof (data) === 'string') {
-                return 's'
-                        + this._cipher.encodeString(data, 'utf8', encoding
-                                || this.encoding);
+                return this._cipher.encodeString(data, 'utf8', encoding
+                        || this.encoding);
             }
             if (Buffer.isBuffer(data)) {
-                return 'b'
-                        + this._cipher.encodeBuffer(data).toString(encoding
-                                || this.encoding);
+                return this._cipher.encodeBuffer(data).toString(encoding
+                        || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
             return;
         };
         this.decrypt = function(data, encoding) {
 
-            if (data[0] === 's') {
-                var raw = data.substring(1, data.length);
-                return this._cipher
-                        .decodeString(raw, encoding || this.encoding);
-            }
-            if (data[0] === 'b') {
-                var raw = data.substring(1, data.length);
-                return new Buffer(this._cipher.decodeString(raw, encoding
-                        || this.encoding));
+            if (typeof (data) === 'string') {
+                return this._cipher.decodeString(data, encoding
+                        || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
             return;
@@ -171,14 +155,14 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
         this.encrypt = function(data, encoding) {
 
             var cipher = crypto.createCipher(my.cipher, my.secret);
-            cipher.update(data, 'utf8');
+            cipher.update(data);
             return cipher.final(encoding || this.encoding);
         };
         this.decrypt = function(data, encoding) {
 
             var cipher = crypto.createDecipher(my.cipher, my.secret);
             cipher.update(data, encoding || this.encoding);
-            return cipher.final('utf8');
+            return cipher.final();
         };
 
     } else if (getCipher[2].indexOf(my.cipher) >= 0) {
@@ -186,7 +170,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
             this.encrypt = function(data, encoding) {
 
                 var cipher = crypto.createHash(my.cipher);
-                cipher.update(data, 'utf8');
+                cipher.update(data);
                 return cipher.digest(encoding || this.encoding);
             };
             this.decrypt = function(data, encoding) {
@@ -199,7 +183,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
             this.encrypt = function(data, encoding) {
 
                 var cipher = crypto.createHmac(my.cipher, my.secret);
-                cipher.update(data, 'utf8');
+                cipher.update(data);
                 return cipher.digest(encoding || this.encoding);
             };
             this.decrypt = function(data, encoding) {

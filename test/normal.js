@@ -30,9 +30,9 @@ try {
  */
 describe('normal', function() {
 
-    var arc4 = 'b0b706e94410dc';
-    var arc4_b64 = 'sLcG6UQQ%3D';
-    var autokey = 'sd8cedcdcde';
+    var arc4 = '2dc1ba510437';
+    var arc4_b64 = 'LcG6UQQ%3D';
+    var autokey = 'd8cedcdcde';
     var openssl = '3eddbb644195e2b8';
 
     describe('arc4', function() {

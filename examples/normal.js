@@ -14,8 +14,7 @@
  */
 // import
 try {
-    var cookiee = require('../index.min.js'); // use
-    // require('cookie-encryption')
+    var cookiee = require('../index.min.js'); // require('cookie-encryption')
     var app = require('express')();
     var cookie = require('cookie-parser');
 } catch (MODULE_NOT_FOUND) {
@@ -24,7 +23,7 @@ try {
 }
 
 var vault = cookiee('ciao', {
-    cipher: 'blowfish',
+    cipher: 'arc4',
     encoding: 'base64'
 });
 
