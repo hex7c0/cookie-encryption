@@ -20,8 +20,7 @@ module.exports = function(grunt) {
 
         uglify: {
             options: {
-                preserveComments: 'false',
-                banner: '<%= banner %>'
+                preserveComments: 'false'
             },
             target: {
                 files: [ {
