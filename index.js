@@ -39,8 +39,8 @@ try {
 function SIGNED(my) {
 
     this._my = my;
-    this.cookie = this._my.cookie;
-    this.encoding = this._my.encoding;
+    this.cookie = my.cookie;
+    this.encoding = my.encoding;
     this.decrypt;
     this.encrypt;
     this._cipher;
@@ -60,8 +60,8 @@ function SIGNED(my) {
 function NORMAL(my) {
 
     this._my = my;
-    this.cookie = this._my.cookie;
-    this.encoding = this._my.encoding;
+    this.cookie = my.cookie;
+    this.encoding = my.encoding;
     this.decrypt;
     this.encrypt;
     this._cipher;
@@ -155,14 +155,14 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
         this.encrypt = function(data, encoding) {
 
             var cipher = crypto.createCipher(my.cipher, my.secret);
-            cipher.update(data);
-            return cipher.final(encoding || this.encoding);
+            return cipher.update(data)
+                    + cipher.final(encoding || this.encoding);
         };
         this.decrypt = function(data, encoding) {
 
             var cipher = crypto.createDecipher(my.cipher, my.secret);
-            cipher.update(data, encoding || this.encoding);
-            return cipher.final();
+            return cipher.update(data, encoding || this.encoding)
+                    + cipher.final();
         };
 
     } else if (getCipher[2].indexOf(my.cipher) >= 0) {
@@ -170,8 +170,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
             this.encrypt = function(data, encoding) {
 
                 var cipher = crypto.createHash(my.cipher);
-                cipher.update(data);
-                return cipher.digest(encoding || this.encoding);
+                return cipher.update(data).digest(encoding || this.encoding);
             };
             this.decrypt = function(data, encoding) {
 
@@ -183,8 +182,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
             this.encrypt = function(data, encoding) {
 
                 var cipher = crypto.createHmac(my.cipher, my.secret);
-                cipher.update(data);
-                return cipher.digest(encoding || this.encoding);
+                return cipher.update(data).digest(encoding || this.encoding);
             };
             this.decrypt = function(data, encoding) {
 
@@ -204,6 +202,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
             throw new TypeError('DiffieHellman not supported');
             return;
         };
+
     } else {
         throw new TypeError('Cipher not supported');
     }
@@ -360,7 +359,7 @@ module.exports = function cookiee(secret, options) {
     }
     var options = options || Object.create(null);
     var my = {
-        secret: String(secret),
+        secret: Buffer.isBuffer(secret) ? secret : Buffer(secret),
         cipher: String(options.cipher || 'arc4'),
         cookie: String(options.cookie || 'vault'),
         domain: String(options.domain || ''),
