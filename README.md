@@ -64,7 +64,7 @@ optional arguments inside of previous methods
 
 #### secret
 
- - `secret`- **String** Set password *(default "required")*
+ - `secret`- **String | Buffer** Set password *(default "required")*
 
 #### [options]
 

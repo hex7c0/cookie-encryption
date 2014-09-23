@@ -1,3 +1,9 @@
+v1.1.3 / 2014-09-23
+==================
+
+  * Fix openssl ciphers, return `update` + `final`
+  * "secret" accept Buffer
+
 v1.1.2 / 2014-09-09
 ==================
 
