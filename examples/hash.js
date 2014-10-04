@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @file hash example
  * @module cookie-encryption

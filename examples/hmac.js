@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @file hmac example
  * @module cookie-encryption

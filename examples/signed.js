@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @file signed example
  * @module cookie-encryption

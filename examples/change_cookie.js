@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @file change cookie example
  * @module cookie-encryption

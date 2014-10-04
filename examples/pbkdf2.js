@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /**
  * @file pbkdf2 example
  * @module cookie-encryption
