@@ -41,13 +41,13 @@ function SIGNED(my) {
     this._my = my;
     this.cookie = my.cookie;
     this.encoding = my.encoding;
-    this.decrypt;
-    this.encrypt;
-    this._cipher;
+    this.decrypt = null;
+    this.encrypt = null;
+    this._cipher = null;
     this.customization(true);
     this.cache = {
-        read: new Object(),
-        write: new Object()
+        read: new Object(null),
+        write: new Object(null)
     };
 }
 /**
@@ -62,13 +62,13 @@ function NORMAL(my) {
     this._my = my;
     this.cookie = my.cookie;
     this.encoding = my.encoding;
-    this.decrypt;
-    this.encrypt;
-    this._cipher;
+    this.decrypt = null;
+    this.encrypt = null;
+    this._cipher = null;
     this.customization(false);
     this.cache = {
-        read: new Object(),
-        write: new Object()
+        read: new Object(null),
+        write: new Object(null)
     };
 }
 
@@ -89,10 +89,9 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                     .pbkdf2Sync(my.cipher, my.extra[0], my.extra[1], my.extra[2])
                     .toString(encoding || this.encoding);
         };
-        this.decrypt = function(data, encoding) {
+        this.decrypt = function() {
 
             throw new TypeError('Pbkdf2 not supported');
-            return;
         };
 
     } else if (my.cipher === getCipher[5][0]) { // autokey
@@ -111,7 +110,6 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                         || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
-            return;
         };
         this.decrypt = function(data, encoding) {
 
@@ -120,7 +118,6 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                         || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
-            return;
         };
 
     } else if (getCipher[0].indexOf(my.cipher) >= 0) { // arc4
@@ -139,7 +136,6 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                         || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
-            return;
         };
         this.decrypt = function(data, encoding) {
 
@@ -148,7 +144,6 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                         || this.encoding);
             }
             throw new TypeError('Not a string or buffer');
-            return;
         };
 
     } else if (getCipher[1].indexOf(my.cipher) >= 0) { // ciphers
@@ -172,10 +167,9 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                 var cipher = crypto.createHash(my.cipher);
                 return cipher.update(data).digest(encoding || this.encoding);
             };
-            this.decrypt = function(data, encoding) {
+            this.decrypt = function() {
 
                 throw new TypeError('Hash not supported');
-                return;
             };
 
         } else { // hmac
@@ -184,10 +178,9 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
                 var cipher = crypto.createHmac(my.cipher, my.secret);
                 return cipher.update(data).digest(encoding || this.encoding);
             };
-            this.decrypt = function(data, encoding) {
+            this.decrypt = function() {
 
                 throw new TypeError('Hmac not supported');
-                return;
             };
         }
 
@@ -197,10 +190,9 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
             var cipher = crypto.getDiffieHellman(my.cipher);
             return cipher.generateKeys().toString(encoding || this.encoding);
         };
-        this.decrypt = function(data, encoding) {
+        this.decrypt = function() {
 
             throw new TypeError('DiffieHellman not supported');
-            return;
         };
 
     } else {
@@ -254,8 +246,9 @@ SIGNED.prototype.read = function(req, cookie, encoding) {
     if (this.cache.read[ck]) {
         return this.cache.read[ck];
     }
-    this.cache.read = new Object();
-    return this.cache.read[ck] = this.decrypt(ck, encoding);
+    this.cache.read = new Object(null);
+    this.cache.read[ck] = this.decrypt(ck, encoding);
+    return this.cache.read[ck];
     // } catch (TypeError) {
     // return '';
     // }
@@ -282,8 +275,9 @@ NORMAL.prototype.read = function(req, cookie, encoding) {
     if (this.cache.read[ck]) {
         return this.cache.read[ck];
     }
-    this.cache.read = new Object();
-    return this.cache.read[ck] = this.decrypt(ck, encoding);
+    this.cache.read = new Object(null);
+    this.cache.read[ck] = this.decrypt(ck, encoding);
+    return this.cache.read[ck];
     // } catch (TypeError) {
     // return '';
     // }
@@ -305,7 +299,7 @@ SIGNED.prototype.write = function(req, data, cookie, encoding) {
     if (this.cache.write[data]) {
         out = this.cache.write[data];
     } else {
-        this.cache.write = new Object();
+        this.cache.write = new Object(null);
         out = this.cache.write[data] = this.encrypt(data, encoding);
     }
     if (req.signedCookies[ck] !== out) {
@@ -330,7 +324,7 @@ NORMAL.prototype.write = function(req, data, cookie, encoding) {
     if (this.cache.write[data]) {
         out = this.cache.write[data];
     } else {
-        this.cache.write = new Object();
+        this.cache.write = new Object(null);
         out = this.cache.write[data] = this.encrypt(data, encoding);
     }
     if (req.cookies[ck] !== out) {
@@ -349,17 +343,17 @@ NORMAL.prototype.write = function(req, data, cookie, encoding) {
  * @exports cookiee
  * @function cookiee
  * @param {String} secret - user password
- * @param {Object} [options] - various options. Check README.md
+ * @param {Object} [opt] - various options. Check README.md
  * @return {Object}
  */
-module.exports = function cookiee(secret, options) {
+function cookiee(secret, opt) {
 
     if (!secret) {
         throw new TypeError('secret required');
     }
-    var options = options || Object.create(null);
+    var options = opt || Object.create(null);
     var my = {
-        secret: Buffer.isBuffer(secret) ? secret : Buffer(secret),
+        secret: Buffer.isBuffer(secret) ? secret : new Buffer(secret),
         cipher: String(options.cipher || 'arc4'),
         cookie: String(options.cookie || 'vault'),
         domain: String(options.domain || ''),
@@ -369,15 +363,15 @@ module.exports = function cookiee(secret, options) {
         secure: Boolean(options.secure),
         signed: Boolean(options.signed),
         encoding: String(options.encoding || 'hex'),
-        extra: Array.isArray(options.extra) == true ? options.extra
-                : new Array()
+        extra: Array.isArray(options.extra) === true ? options.extra : []
     };
 
     if (Boolean(options.signed)) {
         return new SIGNED(my);
     }
     return new NORMAL(my);
-};
+}
+module.exports = cookiee;
 
 /**
  * get supported ciphers
