@@ -287,19 +287,15 @@ NORMAL.prototype.read = function(req, cookie, encoding) {
  */
 SIGNED.prototype.write = function(req, data, cookie, encoding) {
 
-  var out;
+  var o;
   var ck = cookie || this.cookie;
-  if (this.cache.write[data]) {
-    out = this.cache.write[data];
-  } else {
-    this.cache.write = new Object(null);
-    out = this.cache.write[data] = this.encrypt(data, encoding);
+  if ((o = this.cache.write[data]) === undefined) {
+    o = this.cache.write[data] = this.encrypt(data, encoding);
   }
-  if (req.signedCookies[ck] !== out) {
-    var res = req.res;
-    req.signedCookies[ck] = this.set(res, out, cookie);
+  if (req.signedCookies[ck] !== o) {
+    req.signedCookies[ck] = this.set(req.res, o, cookie);
   }
-  return out;
+  return o;
 };
 /**
  * Encrypt information on cookie
@@ -312,19 +308,15 @@ SIGNED.prototype.write = function(req, data, cookie, encoding) {
  */
 NORMAL.prototype.write = function(req, data, cookie, encoding) {
 
-  var out;
+  var o;
   var ck = cookie || this.cookie;
-  if (this.cache.write[data]) {
-    out = this.cache.write[data];
-  } else {
-    this.cache.write = new Object(null);
-    out = this.cache.write[data] = this.encrypt(data, encoding);
+  if ((o = this.cache.write[data]) === undefined) {
+    o = this.cache.write[data] = this.encrypt(data, encoding);
   }
-  if (req.cookies[ck] !== out) {
-    var res = req.res;
-    req.cookies[ck] = this.set(res, out, cookie);
+  if (req.cookies[ck] !== o) {
+    req.cookies[ck] = this.set(req.res, o, cookie);
   }
-  return out;
+  return o;
 };
 
 /*
