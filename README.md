@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/hex7c0/cookie-encryption.svg)](https://travis-ci.org/hex7c0/cookie-encryption)
 [![Dependency Status](https://david-dm.org/hex7c0/cookie-encryption/status.svg)](https://david-dm.org/hex7c0/cookie-encryption)
 
-Encrypt/decrypt data to store on cookie, with memorization.
+Encrypt/decrypt data to store on cookie, with memoization.
 This class is built with 
 [arc4 cipher](https://github.com/hex7c0/arc4), 
 [autokey cipher](https://github.com/hex7c0/autokey), 
@@ -52,6 +52,11 @@ vault.write(req, 'pippo');
 read data from selected cookie
 ```js
 vault.read(req);
+```
+
+flush data cache
+```js
+vault.flush();
 ```
 
 optional arguments inside of previous methods

@@ -78,6 +78,20 @@ function NORMAL(my) {
 inherits(NORMAL, MAIN);
 
 /**
+ * flush data cache
+ * 
+ * @function flush
+ */
+MAIN.prototype.flush = function() {
+
+  this.cache = {
+    read: new Object(null),
+    write: new Object(null)
+  };
+  return;
+};
+
+/**
  * customization for class
  * 
  * @function customization
