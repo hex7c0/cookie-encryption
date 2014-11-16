@@ -21,6 +21,7 @@ try {
   var getCipher = new Array([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto
       .getCiphers(), crypto.getHashes(), [ 'modp1', 'modp2', 'modp5', 'modp14',
       'modp15', 'modp16', 'modp17', 'modp18' ], [ 'pbkdf2' ], [ 'autokey' ]);
+  var inherits = require('util').inherits;
 } catch (MODULE_NOT_FOUND) {
   console.error(MODULE_NOT_FOUND);
   process.exit(1);
@@ -30,6 +31,26 @@ try {
  * class
  */
 /**
+ * MAIN class
+ * 
+ * @class MAIN
+ * @param {Object} my - user option
+ * @return {Object}
+ */
+function MAIN(my) {
+
+  this._my = my;
+  this.cookie = my.cookie;
+  this.encoding = my.encoding;
+  this.decrypt = null;
+  this.encrypt = null;
+  this._cipher = null;
+  this.cache = {
+    read: new Object(null),
+    write: new Object(null)
+  };
+}
+/**
  * SIGNED class
  * 
  * @class SIGNED
@@ -38,18 +59,10 @@ try {
  */
 function SIGNED(my) {
 
-  this._my = my;
-  this.cookie = my.cookie;
-  this.encoding = my.encoding;
-  this.decrypt = null;
-  this.encrypt = null;
-  this._cipher = null;
+  MAIN.call(this, my);
   this.customization(true);
-  this.cache = {
-    read: new Object(null),
-    write: new Object(null)
-  };
 }
+inherits(SIGNED, MAIN);
 /**
  * NORMAL class
  * 
@@ -59,18 +72,10 @@ function SIGNED(my) {
  */
 function NORMAL(my) {
 
-  this._my = my;
-  this.cookie = my.cookie;
-  this.encoding = my.encoding;
-  this.decrypt = null;
-  this.encrypt = null;
-  this._cipher = null;
+  MAIN.call(this, my);
   this.customization(false);
-  this.cache = {
-    read: new Object(null),
-    write: new Object(null)
-  };
 }
+inherits(NORMAL, MAIN);
 
 /**
  * customization for class
@@ -78,8 +83,7 @@ function NORMAL(my) {
  * @function customization
  * @param {Boolean} signed - if signed class
  */
-SIGNED.prototype.customization = NORMAL.prototype.customization = function(
-                                                                           signed) {
+MAIN.prototype.customization = function(signed) {
 
   var my = this._my;
   if (my.cipher === getCipher[4][0]) { // pbkdf2
@@ -238,14 +242,10 @@ SIGNED.prototype.read = function(req, cookie, encoding) {
      * @todo req.headers.cookie
      */
   }
-  // try {
   if ((o = this.cache.read[ck]) === undefined) {
     o = this.cache.read[ck] = this.decrypt(ck, encoding);
   }
   return o;
-  // } catch (TypeError) {
-  // return '';
-  // }
 };
 /**
  * Decrypt information on cookie
@@ -266,14 +266,10 @@ NORMAL.prototype.read = function(req, cookie, encoding) {
      * @todo req.headers.cookie
      */
   }
-  // try {
   if ((o = this.cache.read[ck]) === undefined) {
     o = this.cache.read[ck] = this.decrypt(ck, encoding);
   }
   return o;
-  // } catch (TypeError) {
-  // return '';
-  // }
 };
 
 /**
