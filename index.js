@@ -15,8 +15,8 @@
  */
 // import
 try {
-  var arc4;
-  var autokey;
+  var arc4 = null;
+  var autokey = null;
   var crypto = require('crypto');
   var getCipher = new Array([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto
       .getCiphers(), crypto.getHashes(), [ 'modp1', 'modp2', 'modp5', 'modp14',
@@ -95,7 +95,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
     };
 
   } else if (my.cipher === getCipher[5][0]) { // autokey
-    if (!autokey) { // lazy load
+    if (autokey === null) { // lazy load
       autokey = require('autokey');
     }
     this._cipher = autokey(my.secret);
@@ -120,7 +120,7 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
     };
 
   } else if (getCipher[0].indexOf(my.cipher) >= 0) { // arc4
-    if (!arc4) { // lazy load
+    if (arc4 === null) { // lazy load
       arc4 = require('arc4');
     }
     this._cipher = arc4(my.cipher, my.secret);
@@ -230,21 +230,19 @@ SIGNED.prototype.customization = NORMAL.prototype.customization = function(
  */
 SIGNED.prototype.read = function(req, cookie, encoding) {
 
-  var ck;
+  var ck, o;
   if (req.signedCookies === undefined
-      || !(ck = req.signedCookies[cookie || this.cookie])) {
+      || (ck = req.signedCookies[cookie || this.cookie]) === undefined) {
     return '';
     /**
      * @todo req.headers.cookie
      */
   }
   // try {
-  if (this.cache.read[ck]) {
-    return this.cache.read[ck];
+  if ((o = this.cache.read[ck]) === undefined) {
+    o = this.cache.read[ck] = this.decrypt(ck, encoding);
   }
-  this.cache.read = new Object(null);
-  this.cache.read[ck] = this.decrypt(ck, encoding);
-  return this.cache.read[ck];
+  return o;
   // } catch (TypeError) {
   // return '';
   // }
@@ -260,20 +258,19 @@ SIGNED.prototype.read = function(req, cookie, encoding) {
  */
 NORMAL.prototype.read = function(req, cookie, encoding) {
 
-  var ck;
-  if (req.cookies === undefined || !(ck = req.cookies[cookie || this.cookie])) {
+  var ck, o;
+  if (req.cookies === undefined
+      || (ck = req.cookies[cookie || this.cookie]) === undefined) {
     return '';
     /**
      * @todo req.headers.cookie
      */
   }
   // try {
-  if (this.cache.read[ck]) {
-    return this.cache.read[ck];
+  if ((o = this.cache.read[ck]) === undefined) {
+    o = this.cache.read[ck] = this.decrypt(ck, encoding);
   }
-  this.cache.read = new Object(null);
-  this.cache.read[ck] = this.decrypt(ck, encoding);
-  return this.cache.read[ck];
+  return o;
   // } catch (TypeError) {
   // return '';
   // }
