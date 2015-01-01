@@ -1,5 +1,5 @@
 {
-  "version": "1.1.6",
+  "version": "1.1.7",
   "name": "cookie-encryption",
   "description": "encrypt/decrypt data to store on cookie, with memoization",
   "keywords": [
