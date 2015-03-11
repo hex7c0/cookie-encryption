@@ -2,7 +2,6 @@
 /**
  * @file cookie-encryption main
  * @module cookie-encryption
- * @package cookie-encryption
  * @subpackage main
  * @version 1.1.0
  * @author hex7c0 <hex7c0@gmail.com>
@@ -13,31 +12,25 @@
 /*
  * initialize module
  */
-// import
-try {
-  var arc4 = null;
-  var autokey = null;
-  var crypto = require('crypto');
-  var getCipher = new Array([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto
-      .getCiphers(), crypto.getHashes(), [ 'modp1', 'modp2', 'modp5', 'modp14',
-      'modp15', 'modp16', 'modp17', 'modp18' ], [ 'pbkdf2' ], [ 'autokey' ]);
-  var inherits = require('util').inherits;
-} catch (MODULE_NOT_FOUND) {
-  console.error(MODULE_NOT_FOUND);
-  process.exit(1);
-}
+var arc4 = null;
+var autokey = null;
+var crypto = require('crypto');
+var getCipher = new Array([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto
+.getCiphers(), crypto.getHashes(), [ 'modp1', 'modp2', 'modp5', 'modp14',
+  'modp15', 'modp16', 'modp17', 'modp18' ], [ 'pbkdf2' ], [ 'autokey' ]);
+var inherits = require('util').inherits;
 
 /*
  * class
  */
 /**
- * MAIN class
+ * Main class
  * 
- * @class MAIN
+ * @class Main
  * @param {Object} my - user option
  * @return {Object}
  */
-function MAIN(my) {
+function Main(my) {
 
   this._my = my;
   this.cookie = my.cookie;
@@ -51,38 +44,38 @@ function MAIN(my) {
   };
 }
 /**
- * SIGNED class
+ * Signed class
  * 
- * @class SIGNED
+ * @class Signed
  * @param {Object} my - user option
  * @return {Object}
  */
-function SIGNED(my) {
+function Signed(my) {
 
-  MAIN.call(this, my);
+  Main.call(this, my);
   this.customization(true);
 }
-inherits(SIGNED, MAIN);
+inherits(Signed, Main);
 /**
- * NORMAL class
+ * Normal class
  * 
- * @class NORMAL
+ * @class Normal
  * @param {Object} my - user option
  * @return {Object}
  */
-function NORMAL(my) {
+function Normal(my) {
 
-  MAIN.call(this, my);
+  Main.call(this, my);
   this.customization(false);
 }
-inherits(NORMAL, MAIN);
+inherits(Normal, Main);
 
 /**
  * flush data cache
  * 
  * @function flush
  */
-MAIN.prototype.flush = function() {
+Main.prototype.flush = function() {
 
   this.cache = {
     read: new Object(null),
@@ -97,15 +90,15 @@ MAIN.prototype.flush = function() {
  * @function customization
  * @param {Boolean} signed - if signed class
  */
-MAIN.prototype.customization = function(signed) {
+Main.prototype.customization = function(signed) {
 
   var my = this._my;
   if (my.cipher === getCipher[4][0]) { // pbkdf2
     this.encrypt = function(data, encoding) {
 
       return crypto
-          .pbkdf2Sync(my.cipher, my.extra[0], my.extra[1], my.extra[2])
-          .toString(encoding || this.encoding);
+      .pbkdf2Sync(my.cipher, my.extra[0], my.extra[1], my.extra[2]).toString(
+        encoding || this.encoding);
     };
     this.decrypt = function() {
 
@@ -121,11 +114,11 @@ MAIN.prototype.customization = function(signed) {
 
       if (typeof (data) === 'string') {
         return this._cipher.encodeString(data, 'utf8', encoding
-            || this.encoding);
+          || this.encoding);
       }
       if (Buffer.isBuffer(data)) {
-        return this._cipher.encodeBuffer(data).toString(encoding
-            || this.encoding);
+        return this._cipher.encodeBuffer(data).toString(
+          encoding || this.encoding);
       }
       throw new TypeError('Not a string or buffer');
     };
@@ -146,11 +139,11 @@ MAIN.prototype.customization = function(signed) {
 
       if (typeof (data) === 'string') {
         return this._cipher.encodeString(data, 'utf8', encoding
-            || this.encoding);
+          || this.encoding);
       }
       if (Buffer.isBuffer(data)) {
-        return this._cipher.encodeBuffer(data).toString(encoding
-            || this.encoding);
+        return this._cipher.encodeBuffer(data).toString(
+          encoding || this.encoding);
       }
       throw new TypeError('Not a string or buffer');
     };
@@ -246,11 +239,11 @@ MAIN.prototype.customization = function(signed) {
  * @param {String} [encoding] - fast encoding
  * @return {String}
  */
-SIGNED.prototype.read = function(req, cookie, encoding) {
+Signed.prototype.read = function(req, cookie, encoding) {
 
   var ck, o;
   if (req.signedCookies === undefined
-      || (ck = req.signedCookies[cookie || this.cookie]) === undefined) {
+    || (ck = req.signedCookies[cookie || this.cookie]) === undefined) {
     return '';
     /**
      * @todo req.headers.cookie
@@ -270,11 +263,11 @@ SIGNED.prototype.read = function(req, cookie, encoding) {
  * @param {String} [encoding] - fast encoding
  * @return {String}
  */
-NORMAL.prototype.read = function(req, cookie, encoding) {
+Normal.prototype.read = function(req, cookie, encoding) {
 
   var ck, o;
   if (req.cookies === undefined
-      || (ck = req.cookies[cookie || this.cookie]) === undefined) {
+    || (ck = req.cookies[cookie || this.cookie]) === undefined) {
     return '';
     /**
      * @todo req.headers.cookie
@@ -295,7 +288,7 @@ NORMAL.prototype.read = function(req, cookie, encoding) {
  * @param {String} [cookie] - fast cookie
  * @param {String} [encoding] - fast encoding
  */
-SIGNED.prototype.write = function(req, data, cookie, encoding) {
+Signed.prototype.write = function(req, data, cookie, encoding) {
 
   var o;
   var ck = cookie || this.cookie;
@@ -316,7 +309,7 @@ SIGNED.prototype.write = function(req, data, cookie, encoding) {
  * @param {String} [cookie] - fast cookie
  * @param {String} [encoding] - fast encoding
  */
-NORMAL.prototype.write = function(req, data, cookie, encoding) {
+Normal.prototype.write = function(req, data, cookie, encoding) {
 
   var o;
   var ck = cookie || this.cookie;
@@ -362,9 +355,9 @@ function cookiee(secret, opt) {
   };
 
   if (Boolean(options.signed)) {
-    return new SIGNED(my);
+    return new Signed(my);
   }
-  return new NORMAL(my);
+  return new Normal(my);
 }
 module.exports = cookiee;
 
@@ -375,7 +368,8 @@ module.exports = cookiee;
  * @function getCiphers
  * @return {Array}
  */
-module.exports.getCiphers = function getCiphers() {
+function getCiphers() {
 
   return getCipher;
-};
+}
+module.exports.getCiphers = getCiphers;
