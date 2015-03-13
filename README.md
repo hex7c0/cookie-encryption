@@ -1,8 +1,10 @@
 # [cookie-encryption](http://supergiovane.tk/#/cookie-encryption)
 
-[![NPM version](https://badge.fury.io/js/cookie-encryption.svg)](http://badge.fury.io/js/cookie-encryption)
-[![Build Status](https://travis-ci.org/hex7c0/cookie-encryption.svg)](https://travis-ci.org/hex7c0/cookie-encryption)
-[![Dependency Status](https://david-dm.org/hex7c0/cookie-encryption/status.svg)](https://david-dm.org/hex7c0/cookie-encryption)
+[![NPM version](https://img.shields.io/npm/v/cookie-encryption.svg)](https://www.npmjs.com/package/cookie-encryption)
+[![Linux Status](https://img.shields.io/travis/hex7c0/cookie-encryption.svg?label=linux)](https://travis-ci.org/hex7c0/cookie-encryption)
+[![Windows Status](https://img.shields.io/appveyor/ci/hex7c0/cookie-encryption.svg?label=windows)](https://ci.appveyor.com/project/hex7c0/cookie-encryption)
+[![Dependency Status](https://img.shields.io/david/hex7c0/cookie-encryption.svg)](https://david-dm.org/hex7c0/cookie-encryption)
+[![Coveralls](https://img.shields.io/coveralls/hex7c0/cookie-encryption.svg)](https://coveralls.io/r/hex7c0/cookie-encryption)
 
 Encrypt/decrypt data to store on cookie, with memoization.
 This class is built with 
@@ -39,7 +41,7 @@ return supported ciphers
 ```js
 var cookiee = require('cookie-encryption');
 
-cookiee('ciao').getCiphers();
+cookiee.getCiphers();
 ```
 
 ### Methods
@@ -65,7 +67,7 @@ optional arguments inside of previous methods
  * @param {String} [encoding] - fast encoding
 ```
 
-### cookiee(secret,[options])
+### cookiee(secret [, options])
 
 #### secret
 
@@ -86,6 +88,6 @@ optional arguments inside of previous methods
 
 ## Examples
 
-Take a look at my [examples](https://github.com/hex7c0/cookie-encryption/tree/master/examples)
+Take a look at my [examples](examples)
 
-### [License GPLv3](http://opensource.org/licenses/GPL-3.0)
+### [License GPLv3](LICENSE)
