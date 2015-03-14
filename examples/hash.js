@@ -2,7 +2,6 @@
 /**
  * @file hash example
  * @module cookie-encryption
- * @package cookie-encryption
  * @subpackage examples
  * @version 0.0.1
  * @author hex7c0 <hex7c0@gmail.com>
@@ -12,33 +11,23 @@
 /*
  * initialize module
  */
-// import
-try {
-    var cookiee = require('../index.min.js'); // use
-    // require('cookie-encryption')
-    var app = require('express')();
-    var cookie = require('cookie-parser');
-} catch (MODULE_NOT_FOUND) {
-    console.error(MODULE_NOT_FOUND);
-    process.exit(1);
-}
+var cookiee = require('..'); // use require('cookie-encryption') instead
+var app = require('express')();
+var cookie = require('cookie-parser');
 
 var vault = cookiee('ciao', {
-    cipher: 'whirlpool',
-    encoding: 'base64'
+  cipher: 'whirlpool',
+  encoding: 'base64'
 });
 
-// express routing
 app.use(cookie('foo')); // using only for parsing header cookie
+
 app.get('/', function(req, res) {
 
-    res.send('write: ' + vault.write(req, 'pippo'));
-});
-app.get('/r', function(req, res) {
+  res.send('write: ' + vault.write(req, 'pippo'));
+}).get('/r', function(req, res) {
 
-    // throw TypeError
-    res.send('read: ' + vault.read(req));
-});
-// server starting
-app.listen(3000);
+  // throw TypeError
+  res.send('read: ' + vault.read(req));
+}).listen(3000);
 console.log('starting "hello world" on port 3000');
