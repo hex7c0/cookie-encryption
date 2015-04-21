@@ -25,7 +25,7 @@
   "main": "index.min.js",
   "dependencies": {
     "arc4": "3.1.1",
-    "autokey": "2.0.5"
+    "autokey": "2.1.1"
   },
   "devDependencies": {
     "cookie-parser": "~1.3",
