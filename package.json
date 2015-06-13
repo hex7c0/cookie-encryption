@@ -47,5 +47,5 @@
     "test": "mocha --bail --check-leaks",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly"
   },
-  "license": "GPLv3"
+  "license": "GPL-3.0"
 }
