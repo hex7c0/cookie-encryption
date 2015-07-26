@@ -1,6 +1,13 @@
+v1.2.3 / 2015-07-26
+==================
+
+  * Update `arc4`@3.1.3
+  * Update `autokey`@2.1.3
+
 v1.2.2 / 2015-06-13
 ==================
 
+  * SPDX license
   * Update `arc4`@3.1.2
   * Update `autokey`@2.1.2
 
