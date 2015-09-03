@@ -12,8 +12,8 @@
 /*
  * initialize module
  */
-var arc4 = null;
-var autokey = null;
+var arc4 = require('arc4');
+var autokey = require('autokey');
 var crypto = require('crypto');
 var inherits = require('util').inherits;
 var getCipher = new Array([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto
@@ -80,9 +80,6 @@ Main.prototype.customization = function(signed) {
     };
 
   } else if (my.cipher === getCipher[5][0]) { // autokey
-    if (autokey === null) { // lazy load
-      autokey = require('autokey');
-    }
     this._cipher = autokey(my.secret);
     this.encrypt = function(data, encoding) {
 
@@ -105,9 +102,6 @@ Main.prototype.customization = function(signed) {
     };
 
   } else if (getCipher[0].indexOf(my.cipher) >= 0) { // arc4
-    if (arc4 === null) { // lazy load
-      arc4 = require('arc4');
-    }
     this._cipher = arc4(my.cipher, my.secret);
     this.encrypt = function(data, encoding) {
 
