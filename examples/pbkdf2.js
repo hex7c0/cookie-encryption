@@ -17,7 +17,7 @@ var cookie = require('cookie-parser');
 
 var vault = cookiee('ciao', {
   cipher: 'pbkdf2',
-  encoding: 'base64',
+  encoding: 'base64', // output encoding
   extra: [ 'salt', 4, 5 ], // salt, iterations, keylen
 });
 

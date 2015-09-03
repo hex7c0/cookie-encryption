@@ -18,7 +18,7 @@ var cookie = require('cookie-parser');
 var vault = cookiee('ciao', {
   cipher: 'whirlpool',
   encoding: 'base64',
-  extra: [ true ]
+  extra: [ true ], // enable hmac output, instead of hash
 });
 
 app.use(cookie('foo')); // using only for parsing header cookie

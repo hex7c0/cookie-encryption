@@ -16,7 +16,7 @@ var app = require('express')();
 var cookie = require('cookie-parser');
 
 var vault = cookiee('ciao', {
-  signed: true
+  signed: true, // send signed cookie
 });
 
 app.use(cookie('foo')); // using only for parsing header cookie

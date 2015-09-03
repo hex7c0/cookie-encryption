@@ -17,7 +17,7 @@ var cookie = require('cookie-parser');
 
 var vault = cookiee('ciao', {
   cipher: 'modp2',
-  encoding: 'base64',
+  encoding: 'base64', // output encoding
 });
 
 app.use(cookie('foo')); // using only for parsing header cookie
