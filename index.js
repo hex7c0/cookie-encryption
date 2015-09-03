@@ -15,10 +15,10 @@
 var arc4 = null;
 var autokey = null;
 var crypto = require('crypto');
-var getCipher = new Array([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto
-.getCiphers(), crypto.getHashes(), [ 'modp1', 'modp2', 'modp5', 'modp14',
-  'modp15', 'modp16', 'modp17', 'modp18' ], [ 'pbkdf2' ], [ 'autokey' ]);
 var inherits = require('util').inherits;
+var getCipher = new Array([ 'arc4', 'rc4a', 'vmpc', 'rc4+' ], crypto
+    .getCiphers(), crypto.getHashes(), [ 'modp1', 'modp2', 'modp5', 'modp14',
+  'modp15', 'modp16', 'modp17', 'modp18' ], [ 'pbkdf2' ], [ 'autokey' ]);
 
 /*
  * class
@@ -43,32 +43,6 @@ function Main(my) {
     write: new Object(null)
   };
 }
-/**
- * Signed class
- * 
- * @class Signed
- * @param {Object} my - user option
- * @return {Object}
- */
-function Signed(my) {
-
-  Main.call(this, my);
-  this.customization(true);
-}
-inherits(Signed, Main);
-/**
- * Normal class
- * 
- * @class Normal
- * @param {Object} my - user option
- * @return {Object}
- */
-function Normal(my) {
-
-  Main.call(this, my);
-  this.customization(false);
-}
-inherits(Normal, Main);
 
 /**
  * flush data cache
@@ -97,8 +71,8 @@ Main.prototype.customization = function(signed) {
     this.encrypt = function(data, encoding) {
 
       return crypto
-      .pbkdf2Sync(my.cipher, my.extra[0], my.extra[1], my.extra[2]).toString(
-        encoding || this.encoding);
+          .pbkdf2Sync(my.cipher, my.extra[0], my.extra[1], my.extra[2])
+          .toString(encoding || this.encoding);
     };
     this.decrypt = function() {
 
@@ -230,6 +204,37 @@ Main.prototype.customization = function(signed) {
   return;
 };
 
+/*
+ * inherits
+ */
+
+/**
+ * Signed class
+ * 
+ * @class Signed
+ * @param {Object} my - user option
+ * @return {Object}
+ */
+function Signed(my) {
+
+  Main.call(this, my);
+  this.customization(true);
+}
+inherits(Signed, Main);
+/**
+ * Normal class
+ * 
+ * @class Normal
+ * @param {Object} my - user option
+ * @return {Object}
+ */
+function Normal(my) {
+
+  Main.call(this, my);
+  this.customization(false);
+}
+inherits(Normal, Main);
+
 /**
  * Decrypt information on signed cookie
  * 
@@ -354,10 +359,7 @@ function cookiee(secret, opt) {
     extra: Array.isArray(options.extra) === true ? options.extra : []
   };
 
-  if (Boolean(options.signed)) {
-    return new Signed(my);
-  }
-  return new Normal(my);
+  return Boolean(options.signed) ? new Signed(my) : new Normal(my);
 }
 module.exports = cookiee;
 
