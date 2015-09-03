@@ -20,12 +20,36 @@ var crypto = require('crypto');
  */
 describe('ciphers', function() {
 
+  var c = cookiee.getCiphers();
+
   it('should return available ciphers', function(done) {
 
-    var c = cookiee.getCiphers();
     assert.equal(typeof c, 'object');
     assert.equal(c[0][0], 'arc4');
+    done();
+  });
+  it('should build without error - cipher loop', function(done) {
+
     assert.deepEqual(c[1], crypto.getCiphers());
+    assert.ok(c[1].length > 0);
+    for (var i = 0, ii = c[1].length; i < ii; ++i) {
+      var co = cookiee('hello_world!', {
+        cipher: c[1][i]
+      });
+      assert.ok(co);
+    }
+    done();
+  });
+  it('should build without error - hash loop', function(done) {
+
+    assert.deepEqual(c[2], crypto.getHashes());
+    assert.ok(c[2].length > 0);
+    for (var i = 0, ii = c[2].length; i < ii; ++i) {
+      var co = cookiee('hello_world!', {
+        cipher: c[2][i]
+      });
+      assert.ok(co);
+    }
     done();
   });
 });
