@@ -189,7 +189,7 @@ Main.prototype.customization = function(signed) {
     return res.cookie(cookie || this.cookie, data, {
       domain: my.domain,
       path: my.path,
-      maxAge: my.age,
+      maxAge: my.maxAge,
       httpOnly: my.httpOnly,
       secure: my.secure,
       signed: signed
@@ -345,7 +345,7 @@ function cookiee(secret, opt) {
     cookie: String(options.cookie || 'vault'),
     domain: String(options.domain || ''),
     path: String(options.path || '/'),
-    age: Number(options.age) || 1000 * 3600 * 24 * 365,
+    maxAge: Number(options.maxAge) || 1000 * 3600 * 24 * 365,
     httpOnly: Boolean(options.httpOnly),
     secure: Boolean(options.secure),
     signed: Boolean(options.signed),

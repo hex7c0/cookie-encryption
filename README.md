@@ -44,6 +44,8 @@ var cookiee = require('cookie-encryption');
 cookiee.getCiphers();
 ```
 
+Check [Cookie options](http://expressjs.com/api.html#res.cookie)
+
 ### Methods
 
 write data ('pippo') to selected cookie
@@ -79,7 +81,7 @@ optional arguments inside of previous methods
  - `domain` - **String** Domain of cookie *(default "null")*
  - `cookie` - **String** Name of cookie *(default "vault")*
  - `path` - **String** Path of cookie *(default "/")*
- - `age` - **Number** Age of cookie in millisecond *(default "1 year")*
+ - `maxAge` - **Number** Age of cookie in millisecond *(default "1 year")*
  - `httpOnly` - **Boolean** Flag for http only cookie *(default "false")*
  - `secure` - **Boolean** Flag for using cookie over TLS/SSL *(default "false")*
  - `signed` - **Boolean** Will use the secret passed to cookieParser(secret) to sign the value *(default "false")*
