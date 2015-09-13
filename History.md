@@ -1,4 +1,10 @@
-v1.3.0 / 2015-08-03
+v1.4.0 / 2015-09-13
+==================
+
+  * Rename cookie option `age` to `maxAge`
+  * Test `node`@4
+
+v1.3.0 / 2015-09-03
 ==================
 
   * Remove lazy loading
