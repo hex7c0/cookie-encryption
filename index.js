@@ -126,8 +126,9 @@ Main.prototype.customization = function(signed) {
   } else if (getCipher[1].indexOf(my.cipher) >= 0) { // ciphers
     this.encrypt = function(data, encoding) {
 
+      var encode = encoding || this.encoding;
       var cipher = crypto.createCipher(my.cipher, my.secret);
-      return cipher.update(data) + cipher.final(encoding || this.encoding);
+      return cipher.update(data, 'utf8', encode) + cipher.final(encode);
     };
     this.decrypt = function(data, encoding) {
 
