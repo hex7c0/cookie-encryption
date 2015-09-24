@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.4.1",
   "name": "cookie-encryption",
   "description": "encrypt/decrypt data to store on cookie, with memoization",
   "keywords": [
@@ -8,7 +8,7 @@
     "authentication"
   ],
   "preferGlobal": false,
-  "homepage": "http://supergiovane.tk/#/cookie-encryption",
+  "homepage": "https://github.com/hex7c0/cookie-encryption",
   "author": {
     "name": "hex7c0",
     "email": "hex7c0@gmail.com",

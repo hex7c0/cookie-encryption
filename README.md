@@ -1,4 +1,4 @@
-# [cookie-encryption](http://supergiovane.tk/#/cookie-encryption)
+# [cookie-encryption](https://github.com/hex7c0/cookie-encryption)
 
 [![NPM version](https://img.shields.io/npm/v/cookie-encryption.svg)](https://www.npmjs.com/package/cookie-encryption)
 [![Linux Status](https://img.shields.io/travis/hex7c0/cookie-encryption.svg?label=linux)](https://travis-ci.org/hex7c0/cookie-encryption)
