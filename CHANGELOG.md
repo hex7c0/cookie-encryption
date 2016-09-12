@@ -1,7 +1,14 @@
+v1.5.0 / 2016-09-12
+==================
+
+  * Tested against `node`@6
+  * Update `arc4`@3.3.5
+  * Update `autokey`@2.3.4
+
 v1.4.2 / 2015-11-24
 ==================
 
-  * Test `node`@5
+  * Tested against `node`@5
   * Update `arc4`@3.2.1
   * Update `autokey`@2.2.1
 
@@ -14,13 +21,13 @@ v1.4.0 / 2015-09-13
 ==================
 
   * Rename cookie option `age` to `maxAge`
-  * Test `node`@4
+  * Tested against `node`@4
 
 v1.3.0 / 2015-09-03
 ==================
 
   * Remove lazy loading
-  * Test `iojs`@3
+  * Tested against `iojs`@3
   * Update `arc4`@3.2.0
   * Update `autokey`@2.2.0
 
