@@ -1,3 +1,11 @@
+v1.6.0 / 2017-02-14
+==================
+
+  * Tested against `node`@7
+  * Remove support for `node`@0
+  * Update `arc4`@3.3.7
+  * Update `autokey`@2.3.6
+
 v1.5.0 / 2016-09-12
 ==================
 
