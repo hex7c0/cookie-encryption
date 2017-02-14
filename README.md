@@ -1,7 +1,7 @@
 # [cookie-encryption](https://github.com/hex7c0/cookie-encryption)
 
 [![NPM version](https://img.shields.io/npm/v/cookie-encryption.svg)](https://www.npmjs.com/package/cookie-encryption)
-[![Linux Status](https://img.shields.io/travis/hex7c0/cookie-encryption.svg?label=linux)](https://travis-ci.org/hex7c0/cookie-encryption)
+[![Linux Status](https://img.shields.io/travis/hex7c0/cookie-encryption.svg?label=linux-osx)](https://travis-ci.org/hex7c0/cookie-encryption)
 [![Windows Status](https://img.shields.io/appveyor/ci/hex7c0/cookie-encryption.svg?label=windows)](https://ci.appveyor.com/project/hex7c0/cookie-encryption)
 [![Dependency Status](https://img.shields.io/david/hex7c0/cookie-encryption.svg)](https://david-dm.org/hex7c0/cookie-encryption)
 [![Coveralls](https://img.shields.io/coveralls/hex7c0/cookie-encryption.svg)](https://coveralls.io/r/hex7c0/cookie-encryption)
