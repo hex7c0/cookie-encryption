@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "cookie-parser": "~1.4",
-    "express": "~4.16",
+    "express": "~4.18",
     "grunt": "~1.0",
     "grunt-contrib-uglify": "~3.3",
     "grunt-contrib-jshint": "~1.1",
