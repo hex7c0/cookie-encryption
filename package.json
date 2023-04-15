@@ -30,7 +30,7 @@
   "devDependencies": {
     "cookie-parser": "~1.4",
     "express": "~4.16",
-    "grunt": "~1.0",
+    "grunt": "~1.5",
     "grunt-contrib-uglify": "~3.3",
     "grunt-contrib-jshint": "~1.1",
     "grunt-endline": "~0.7",
